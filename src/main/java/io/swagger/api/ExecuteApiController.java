@@ -2,9 +2,14 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.Order;
+import io.swagger.model.RecurringOrder;
+import io.swagger.services.OrderService;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,6 +26,10 @@ public class ExecuteApiController implements ExecuteApi {
 
   private final HttpServletRequest request;
 
+  @Autowired
+  private final OrderService service;
+
+
   @org.springframework.beans.factory.annotation.Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request) {
     this.objectMapper = objectMapper;
@@ -29,8 +38,24 @@ public class ExecuteApiController implements ExecuteApi {
 
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
-    String accept = request.getHeader("Accept");
-    return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+    List<Order> oneTime;
+    try {
+      oneTime = service.getAllOneTimeOrders();
+    } catch (Exception e1) {
+      e1.printStackTrace();
+    }
+    List<RecurringOrder> toReturn;
+    try {
+      toReturn = service.getAllRecurringOrders();
+    } catch (Exception e1) {
+      e1.printStackTrace();
+    }
+    //TODO a bunch of summation logic, then a bunch of API hits.
+    //TODO after we successfully order each type of the crypto, release it to its owners.
+    service.incrementOrResetAllRecurringOrders();
+    service.wipeAllOneTimeOrders();
+    
+    return new ResponseEntity<Void>(toReturn,
+        HttpStatus.OK);
   }
-
 }

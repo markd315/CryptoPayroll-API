@@ -2,6 +2,7 @@ package io.swagger.services;
 
 import io.swagger.api.NotFoundException;
 import io.swagger.model.Order;
+import io.swagger.model.RecurringOrder;
 import io.swagger.repo.OrderRepo;
 import io.swagger.repo.RecurringRepo;
 import java.util.List;
@@ -40,8 +41,16 @@ public class OrderService {
 
   public List<Order> getAllOneTimeOrders() throws NotFoundException {
     List<Order> orders = orderRepository.findAll();
-    if (orders == null || orders.size() == 0) {
-      throw new NotFoundException(404, "No such order");
+    if (orders == null) {
+      throw new NotFoundException(404, "No such orders");
+    }
+    return orders;
+  }
+
+  public List<RecurringOrder> getAllRecurringOrders() throws NotFoundException {
+    List<RecurringOrder> orders = recurringRepository.findAll();
+    if (orders == null) {
+      throw new NotFoundException(404, "No such orders");
     }
     return orders;
   }
