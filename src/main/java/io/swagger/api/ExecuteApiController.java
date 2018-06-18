@@ -2,6 +2,7 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.configuration.GDAXAuthorizer;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.OrderService;
@@ -54,6 +55,11 @@ public class ExecuteApiController implements ExecuteApi {
     }
     //TODO a bunch of summation logic, then a bunch of API hits.
     //TODO after we successfully order each type of the crypto, release it to its owners.
+    GDAXAuthorizer authGDAX = new GDAXAuthorizer();
+    String cbAccessSign = authGDAX.getCBSignature();
+    String cbAccessKey = authGDAX.getCBAccessKey();
+    String cbAccessPassphrase = authGDAX.getCBAccessPassphrase();
+    String cbAccessTimestamp = authGDAX.getCBAccessTimestamp();
     service.incrementOrResetAllRecurringOrders();
     try {
       service.wipeAllOneTimeOrders();
