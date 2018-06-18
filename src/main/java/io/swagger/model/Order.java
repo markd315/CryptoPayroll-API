@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 
 public class Order {
   @JsonProperty("id")
-  private Long id = null;
+  private String id = null;
 
   /**
    * Three-digit trade code
@@ -105,7 +105,7 @@ public class Order {
   @JsonProperty("employeeId")
   private UUID employeeId = null;
 
-  public Order id(Long id) {
+  public Order id(String id) {
     this.id = id;
     return this;
   }
@@ -114,14 +114,12 @@ public class Order {
    * Get id
    * @return id
    **/
-  @ApiModelProperty(required = true, value = "")
-  @NotNull
 
-  public Long getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(String id) {
     this.id = id;
   }
 
