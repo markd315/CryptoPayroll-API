@@ -1,14 +1,10 @@
 package io.swagger.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.model.RecurringOrder;
-import org.springframework.validation.annotation.Validated;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * RecurringConfirmation
@@ -16,7 +12,7 @@ import javax.validation.constraints.*;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T10:30:50.994-04:00")
 
-public class RecurringConfirmation   {
+public class RecurringConfirmation {
   @JsonProperty("code")
   private Integer code = null;
 
@@ -37,9 +33,8 @@ public class RecurringConfirmation   {
   /**
    * Get code
    * @return code
-  **/
+   **/
   @ApiModelProperty(value = "")
-
 
   public Integer getCode() {
     return code;
@@ -57,9 +52,8 @@ public class RecurringConfirmation   {
   /**
    * Get type
    * @return type
-  **/
+   **/
   @ApiModelProperty(value = "")
-
 
   public String getType() {
     return type;
@@ -77,9 +71,8 @@ public class RecurringConfirmation   {
   /**
    * Get message
    * @return message
-  **/
+   **/
   @ApiModelProperty(value = "")
-
 
   public String getMessage() {
     return message;
@@ -97,7 +90,7 @@ public class RecurringConfirmation   {
   /**
    * Get order
    * @return order
-  **/
+   **/
   @ApiModelProperty(value = "")
 
   @Valid
@@ -135,7 +128,7 @@ public class RecurringConfirmation   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class RecurringConfirmation {\n");
-    
+
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
@@ -145,8 +138,7 @@ public class RecurringConfirmation   {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

@@ -1,15 +1,14 @@
 package io.swagger.model;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.Objects;
 import java.util.UUID;
-import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Order
@@ -17,7 +16,7 @@ import javax.validation.constraints.*;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T10:30:50.994-04:00")
 
-public class Order   {
+public class Order {
   @JsonProperty("id")
   private Long id = null;
 
@@ -26,9 +25,9 @@ public class Order   {
    */
   public enum CurrencyEnum {
     BTC("BTC"),
-    
+
     ETH("ETH"),
-    
+
     LTC("LTC");
 
     private String value;
@@ -68,7 +67,7 @@ public class Order   {
    */
   public enum DestinationTypeEnum {
     COINBASE("coinbase"),
-    
+
     WALLET("wallet");
 
     private String value;
@@ -114,10 +113,9 @@ public class Order   {
   /**
    * Get id
    * @return id
-  **/
+   **/
   @ApiModelProperty(required = true, value = "")
   @NotNull
-
 
   public Long getId() {
     return id;
@@ -135,10 +133,9 @@ public class Order   {
   /**
    * Three-digit trade code
    * @return currency
-  **/
+   **/
   @ApiModelProperty(required = true, value = "Three-digit trade code")
   @NotNull
-
 
   public CurrencyEnum getCurrency() {
     return currency;
@@ -156,10 +153,9 @@ public class Order   {
   /**
    * Amount of currency to send
    * @return quantity
-  **/
+   **/
   @ApiModelProperty(required = true, value = "Amount of currency to send")
   @NotNull
-
 
   public Integer getQuantity() {
     return quantity;
@@ -177,10 +173,9 @@ public class Order   {
   /**
    * Get destination
    * @return destination
-  **/
+   **/
   @ApiModelProperty(required = true, value = "")
   @NotNull
-
 
   public String getDestination() {
     return destination;
@@ -198,10 +193,9 @@ public class Order   {
   /**
    * Get destinationType
    * @return destinationType
-  **/
+   **/
   @ApiModelProperty(required = true, value = "")
   @NotNull
-
 
   public DestinationTypeEnum getDestinationType() {
     return destinationType;
@@ -219,9 +213,8 @@ public class Order   {
   /**
    * Get filled
    * @return filled
-  **/
+   **/
   @ApiModelProperty(value = "")
-
 
   public Boolean isFilled() {
     return filled;
@@ -239,7 +232,7 @@ public class Order   {
   /**
    * This should only be needed on the calling side to charge the business for their purchase
    * @return xTenant
-  **/
+   **/
   @ApiModelProperty(value = "This should only be needed on the calling side to charge the business for their purchase")
 
   @Valid
@@ -260,7 +253,7 @@ public class Order   {
   /**
    * This should only be needed on the calling side for validations
    * @return employeeId
-  **/
+   **/
   @ApiModelProperty(value = "This should only be needed on the calling side for validations")
 
   @Valid
@@ -302,7 +295,7 @@ public class Order   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Order {\n");
-    
+
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    quantity: ").append(toIndentedString(quantity)).append("\n");
@@ -316,8 +309,7 @@ public class Order   {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

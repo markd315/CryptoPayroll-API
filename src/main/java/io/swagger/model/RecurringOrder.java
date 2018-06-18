@@ -1,14 +1,12 @@
 package io.swagger.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.model.Order;
-import org.springframework.validation.annotation.Validated;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Be sure to clear the inherited filled field after every trigger
@@ -17,7 +15,7 @@ import javax.validation.constraints.*;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T10:30:50.994-04:00")
 
-public class RecurringOrder   {
+public class RecurringOrder {
   @JsonProperty("order")
   private Order order = null;
 
@@ -35,7 +33,7 @@ public class RecurringOrder   {
   /**
    * Get order
    * @return order
-  **/
+   **/
   @ApiModelProperty(required = true, value = "")
   @NotNull
 
@@ -57,9 +55,8 @@ public class RecurringOrder   {
   /**
    * Send this recurring order every N pay cycles
    * @return cyclePeriod
-  **/
+   **/
   @ApiModelProperty(value = "Send this recurring order every N pay cycles")
-
 
   public Integer getCyclePeriod() {
     return cyclePeriod;
@@ -77,9 +74,8 @@ public class RecurringOrder   {
   /**
    * Once this = cyclePeriod-1, we send on the next cycle.
    * @return cyclesSinceLast
-  **/
+   **/
   @ApiModelProperty(value = "Once this = cyclePeriod-1, we send on the next cycle.")
-
 
   public Integer getCyclesSinceLast() {
     return cyclesSinceLast;
@@ -113,7 +109,7 @@ public class RecurringOrder   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class RecurringOrder {\n");
-    
+
     sb.append("    order: ").append(toIndentedString(order)).append("\n");
     sb.append("    cyclePeriod: ").append(toIndentedString(cyclePeriod)).append("\n");
     sb.append("    cyclesSinceLast: ").append(toIndentedString(cyclesSinceLast)).append("\n");
@@ -122,8 +118,7 @@ public class RecurringOrder   {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

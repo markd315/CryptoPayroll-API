@@ -10,6 +10,8 @@ import com.fasterxml.jackson.datatype.threetenbp.DecimalUtils;
 import com.fasterxml.jackson.datatype.threetenbp.deser.ThreeTenDateTimeDeserializerBase;
 import com.fasterxml.jackson.datatype.threetenbp.function.BiFunction;
 import com.fasterxml.jackson.datatype.threetenbp.function.Function;
+import java.io.IOException;
+import java.math.BigDecimal;
 import org.threeten.bp.DateTimeException;
 import org.threeten.bp.Instant;
 import org.threeten.bp.OffsetDateTime;
@@ -19,13 +21,9 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.Temporal;
 import org.threeten.bp.temporal.TemporalAccessor;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-
 /**
- * Deserializer for ThreeTen temporal {@link Instant}s, {@link OffsetDateTime}, and {@link ZonedDateTime}s.
- * Adapted from the jackson threetenbp InstantDeserializer to add support for deserializing rfc822 format.
- *
+ * Deserializer for ThreeTen temporal {@link Instant}s, {@link OffsetDateTime}, and {@link ZonedDateTime}s. Adapted from the jackson threetenbp
+ * InstantDeserializer to add support for deserializing rfc822 format.
  * @author Nick Williams
  */
 public class CustomInstantDeserializer<T extends Temporal>
@@ -120,11 +118,11 @@ public class CustomInstantDeserializer<T extends Temporal>
   protected final BiFunction<T, ZoneId, T> adjust;
 
   protected CustomInstantDeserializer(Class<T> supportedType,
-                    DateTimeFormatter parser,
-                    Function<TemporalAccessor, T> parsedToValue,
-                    Function<FromIntegerArguments, T> fromMilliseconds,
-                    Function<FromDecimalArguments, T> fromNanoseconds,
-                    BiFunction<T, ZoneId, T> adjust) {
+                                      DateTimeFormatter parser,
+                                      Function<TemporalAccessor, T> parsedToValue,
+                                      Function<FromIntegerArguments, T> fromMilliseconds,
+                                      Function<FromDecimalArguments, T> fromNanoseconds,
+                                      BiFunction<T, ZoneId, T> adjust) {
     super(supportedType, parser);
     this.parsedToValue = parsedToValue;
     this.fromMilliseconds = fromMilliseconds;
