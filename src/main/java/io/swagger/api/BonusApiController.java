@@ -33,6 +33,7 @@ public class BonusApiController implements BonusApi {
   public ResponseEntity<Void> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody Order body) {
     body.filled(false).id(UUID.randomUUID());//Server overridden fields
     String accept = request.getHeader("Accept");
+    System.out.print(accept);
     return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
   }
 
