@@ -62,4 +62,8 @@ public class OrderService {
     }
     orderRepository.delete(orders);
   }
+
+  public void incrementOrResetAllRecurringOrders() {
+    //TODO
+  }
 }

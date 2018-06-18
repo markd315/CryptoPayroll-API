@@ -31,9 +31,10 @@ public class ExecuteApiController implements ExecuteApi {
 
 
   @org.springframework.beans.factory.annotation.Autowired
-  public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+  public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, OrderService service) {
     this.objectMapper = objectMapper;
     this.request = request;
+    this.service = service;
   }
 
   public ResponseEntity<Void> executePayments(
@@ -54,7 +55,7 @@ public class ExecuteApiController implements ExecuteApi {
     //TODO after we successfully order each type of the crypto, release it to its owners.
     service.incrementOrResetAllRecurringOrders();
     service.wipeAllOneTimeOrders();
-    
+
     return new ResponseEntity<Void>(toReturn,
         HttpStatus.OK);
   }
