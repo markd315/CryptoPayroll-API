@@ -59,7 +59,7 @@ public class Order {
   private CurrencyEnum currency = null;
 
   @JsonProperty("quantity")
-  private Integer quantity = null;
+  private Double quantity = null;
 
   @JsonProperty("destination")
   private String destination = null;
@@ -142,7 +142,7 @@ public class Order {
     this.currency = currency;
   }
 
-  public Order quantity(Integer quantity) {
+  public Order quantity(Double quantity) {
     this.quantity = quantity;
     return this;
   }
@@ -154,11 +154,11 @@ public class Order {
   @ApiModelProperty(required = true, value = "Amount of currency to send")
   @NotNull
 
-  public Integer getQuantity() {
+  public Double getQuantity() {
     return quantity;
   }
 
-  public void setQuantity(Integer quantity) {
+  public void setQuantity(Double quantity) {
     this.quantity = quantity;
   }
 
