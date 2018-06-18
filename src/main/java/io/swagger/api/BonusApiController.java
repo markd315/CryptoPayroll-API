@@ -3,6 +3,7 @@ package io.swagger.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import io.swagger.model.Order;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:17:09.771-04:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
 @Controller
 public class BonusApiController implements BonusApi {
@@ -29,8 +30,8 @@ public class BonusApiController implements BonusApi {
     this.request = request;
   }
 
-  public ResponseEntity<Void> addBonus(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody Order body) {
-    body.id(null).setFilled(false);
+  public ResponseEntity<Void> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody Order body) {
+    body.filled(false).id(UUID.randomUUID());//Server overridden fields
     String accept = request.getHeader("Accept");
     return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
   }

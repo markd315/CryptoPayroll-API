@@ -9,9 +9,9 @@ import org.springframework.validation.annotation.Validated;
  * ModelApiResponse
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:17:09.771-04:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
-public class ModelApiResponse {
+public class ModelApiResponse   {
   @JsonProperty("code")
   private Integer code = null;
 
@@ -29,7 +29,7 @@ public class ModelApiResponse {
   /**
    * Get code
    * @return code
-   **/
+  **/
   @ApiModelProperty(value = "")
 
   public Integer getCode() {
@@ -48,8 +48,9 @@ public class ModelApiResponse {
   /**
    * Get type
    * @return type
-   **/
+  **/
   @ApiModelProperty(value = "")
+
 
   public String getType() {
     return type;
@@ -67,8 +68,9 @@ public class ModelApiResponse {
   /**
    * Get message
    * @return message
-   **/
+  **/
   @ApiModelProperty(value = "")
+
 
   public String getMessage() {
     return message;
@@ -111,7 +113,8 @@ public class ModelApiResponse {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

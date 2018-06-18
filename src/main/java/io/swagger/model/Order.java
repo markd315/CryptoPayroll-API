@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
+import java.util.UUID;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
@@ -12,11 +14,11 @@ import org.springframework.validation.annotation.Validated;
  * Order
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:17:09.771-04:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
 public class Order {
   @JsonProperty("id")
-  private String id = null;
+  private UUID id = null;
 
   /**
    * Three-digit trade code
@@ -97,7 +99,7 @@ public class Order {
   @JsonProperty("filled")
   private Boolean filled = null;
 
-  public Order id(String id) {
+  public Order id(UUID id) {
     this.id = id;
     return this;
   }
@@ -108,11 +110,13 @@ public class Order {
    **/
   @ApiModelProperty(value = "Overwritten by server")
 
-  public String getId() {
+  @Valid
+
+  public UUID getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(UUID id) {
     this.id = id;
   }
 
