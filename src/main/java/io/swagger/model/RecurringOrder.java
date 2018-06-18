@@ -25,6 +25,9 @@ public class RecurringOrder {
   @JsonProperty("cyclesSinceLast")
   private Integer cyclesSinceLast = 0;
 
+  @JsonProperty("id")
+  private int id;
+
   public RecurringOrder order(Order order) {
     this.order = order;
     return this;
