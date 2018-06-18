@@ -30,7 +30,13 @@ public class BonusApiController implements BonusApi {
   }
 
   public ResponseEntity<Void> addBonus(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody Order body) {
+    body.filled(false); //Mandate this for security
     System.out.println("MEthod");
+    /*
+	"x-tenant":"3732f89a-2ddb-4a29-88de-de6c6fe4cc9f"
+	"employeeId":"7cd69db2-3bd8-40f1-8031-bd2056f322b5"
+	This sort of information should be sent to the previous microservice for tallying employer obligations and reporting taxes but it does not fall under my domain.
+     */
     String accept = request.getHeader("Accept");
     System.out.println(body);
     return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);

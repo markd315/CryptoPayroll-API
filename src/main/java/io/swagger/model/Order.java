@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
-import java.util.UUID;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
@@ -98,12 +96,6 @@ public class Order {
 
   @JsonProperty("filled")
   private Boolean filled = null;
-
-  @JsonProperty("x-tenant")
-  private UUID xTenant = null;
-
-  @JsonProperty("employeeId")
-  private UUID employeeId = null;
 
   public Order id(String id) {
     this.id = id;
@@ -222,49 +214,6 @@ public class Order {
     this.filled = filled;
   }
 
-  public Order xTenant(UUID xTenant) {
-    this.xTenant = xTenant;
-    return this;
-  }
-
-  /**
-   * This should only be needed on the calling side to charge the business for their purchase
-   * @return xTenant
-   **/
-  @ApiModelProperty(value = "This should only be needed on the calling side to charge the business for their purchase")
-
-  @Valid
-
-  public UUID getXTenant() {
-    return xTenant;
-  }
-
-  public void setXTenant(UUID xTenant) {
-    this.xTenant = xTenant;
-  }
-
-  public Order employeeId(UUID employeeId) {
-    this.employeeId = employeeId;
-    return this;
-  }
-
-  /**
-   * This should only be needed on the calling side for validations
-   * @return employeeId
-   **/
-  @ApiModelProperty(value = "This should only be needed on the calling side for validations")
-
-  @Valid
-
-  public UUID getEmployeeId() {
-    return employeeId;
-  }
-
-  public void setEmployeeId(UUID employeeId) {
-    this.employeeId = employeeId;
-  }
-
-
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -279,14 +228,12 @@ public class Order {
         Objects.equals(this.quantity, order.quantity) &&
         Objects.equals(this.destination, order.destination) &&
         Objects.equals(this.destinationType, order.destinationType) &&
-        Objects.equals(this.filled, order.filled) &&
-        Objects.equals(this.xTenant, order.xTenant) &&
-        Objects.equals(this.employeeId, order.employeeId);
+        Objects.equals(this.filled, order.filled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, currency, quantity, destination, destinationType, filled, xTenant, employeeId);
+    return Objects.hash(id, currency, quantity, destination, destinationType, filled);
   }
 
   @Override
@@ -300,8 +247,6 @@ public class Order {
     sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
     sb.append("    destinationType: ").append(toIndentedString(destinationType)).append("\n");
     sb.append("    filled: ").append(toIndentedString(filled)).append("\n");
-    sb.append("    xTenant: ").append(toIndentedString(xTenant)).append("\n");
-    sb.append("    employeeId: ").append(toIndentedString(employeeId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
