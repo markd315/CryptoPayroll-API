@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
  * Order
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T10:30:50.994-04:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:17:09.771-04:00")
 
 public class Order {
   @JsonProperty("id")
@@ -103,9 +103,10 @@ public class Order {
   }
 
   /**
-   * Get id
+   * Overwritten by server
    * @return id
    **/
+  @ApiModelProperty(value = "Overwritten by server")
 
   public String getId() {
     return id;
@@ -201,10 +202,10 @@ public class Order {
   }
 
   /**
-   * Get filled
+   * Overwritten by server
    * @return filled
    **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Overwritten by server")
 
   public Boolean isFilled() {
     return filled;
@@ -213,6 +214,7 @@ public class Order {
   public void setFilled(Boolean filled) {
     this.filled = filled;
   }
+
 
   @Override
   public boolean equals(java.lang.Object o) {

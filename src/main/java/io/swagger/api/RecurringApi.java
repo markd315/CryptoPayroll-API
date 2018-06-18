@@ -14,10 +14,11 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T10:30:50.994-04:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:17:09.771-04:00")
 
 @Api(value = "recurring", description = "the recurring API")
 public interface RecurringApi {
@@ -43,7 +44,8 @@ public interface RecurringApi {
       produces = {"application/json"},
       consumes = {"application/json"},
       method = RequestMethod.DELETE)
-  ResponseEntity<Void> deleteRecurring(@ApiParam(value = "The recurring order to remove", required = true) @PathVariable("target") String target);
+  ResponseEntity<Void> deleteRecurring(@ApiParam(value = "The recurring order to remove", required = true) @PathVariable("target") String target,
+                                       @ApiParam(value = "The currency to remove (USD: all)", allowableValues = "USD, BTC, ETH, LTC") @RequestHeader(value = "code", required = false) String code);
 
 
   @ApiOperation(value = "Retrieve details about a specific recurring order", nickname = "retrieveRecurring", notes = "", tags = {"x-tenant",})
@@ -53,8 +55,9 @@ public interface RecurringApi {
       @ApiResponse(code = 404, message = "Target not found")})
   @RequestMapping(value = "/recurring/{target}",
       produces = {"application/json"},
+      consumes = {"application/json"},
       method = RequestMethod.GET)
-  ResponseEntity<Void> retrieveRecurring(@ApiParam(value = "The recurring order to query", required = true) @PathVariable("target") String target);
+  ResponseEntity<Void> retrieveRecurring(@ApiParam(value = "x-tenant to retrieve orders for", required = true) @PathVariable("target") String target);
 
 
   @ApiOperation(value = "Update details about an existing recurring order", nickname = "updateRecurring", notes = "", tags = {"x-tenant",})
@@ -68,6 +71,7 @@ public interface RecurringApi {
       consumes = {"application/json"},
       method = RequestMethod.PUT)
   ResponseEntity<Void> updateRecurring(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody RecurringOrder body,
-                                       @ApiParam(value = "The recurring order to replace", required = true) @PathVariable("target") String target);
+                                       @ApiParam(value = "The recurring order to replace", required = true) @PathVariable("target") String target,
+                                       @ApiParam(value = "The currency to override (USD: all)", allowableValues = "USD, BTC, ETH, LTC") @RequestHeader(value = "code", required = false) String code);
 
 }
