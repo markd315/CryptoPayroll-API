@@ -16,7 +16,8 @@ public class OrderService {
   private final RecurringRepo recurringRepository;
 
 
-  public OrderService(@Autowired OrderRepo orderRepository, @Autowired RecurringRepo recurringRepository) {
+  @Autowired
+  public OrderService(OrderRepo orderRepository, RecurringRepo recurringRepository) {
     this.orderRepository = orderRepository;
     this.recurringRepository = recurringRepository;
   }
