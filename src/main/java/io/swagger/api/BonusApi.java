@@ -30,6 +30,6 @@ public interface BonusApi {
       produces = {"application/json"},
       consumes = {"application/json"},
       method = RequestMethod.POST)
-  ResponseEntity<Void> addBonus(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody Order body);
+  ResponseEntity<Order> addBonus(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody Order body);
 
 }

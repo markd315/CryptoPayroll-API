@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 public class Order {
   @JsonProperty("id")
+  @Id
   private UUID id = null;
 
   /**
