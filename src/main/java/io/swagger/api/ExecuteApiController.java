@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
@@ -45,7 +46,7 @@ public class ExecuteApiController implements ExecuteApi {
     } catch (Exception e1) {
       e1.printStackTrace();
     }
-    List<RecurringOrder> toReturn;
+    List<RecurringOrder> toReturn = null;
     try {
       toReturn = service.getAllRecurringOrders();
     } catch (Exception e1) {
@@ -54,9 +55,13 @@ public class ExecuteApiController implements ExecuteApi {
     //TODO a bunch of summation logic, then a bunch of API hits.
     //TODO after we successfully order each type of the crypto, release it to its owners.
     service.incrementOrResetAllRecurringOrders();
-    service.wipeAllOneTimeOrders();
+    try {
+      service.wipeAllOneTimeOrders();
+    } catch (NotFoundException e) {
+      e.printStackTrace();
+    }
 
-    return new ResponseEntity<Void>(toReturn,
+    return new ResponseEntity<Void>((MultiValueMap<String, String>) toReturn,
         HttpStatus.OK);
   }
 }
