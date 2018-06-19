@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.naming.InsufficientResourcesException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public interface ExecuteApi {
       consumes = {"application/json"},
       method = RequestMethod.POST)
   ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception;
+      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code)
+      throws InsufficientResourcesException;
 
 }

@@ -5,11 +5,14 @@ import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
 import com.coinbase.exchange.api.entity.NewOrderSingle;
+import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
 import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.orders.OrderService;
+import com.coinbase.exchange.api.payments.CoinbaseAccount;
 import com.coinbase.exchange.api.payments.PaymentService;
+import com.coinbase.exchange.api.payments.PaymentType;
 import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
@@ -20,6 +23,7 @@ import io.swagger.services.UltiOrderService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.naming.InsufficientResourcesException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,8 +177,31 @@ public class ExecuteApiController implements ExecuteApi {
   //TODO Wire transfers are slow. Unless we're going to hold crypto,
   //TODO we might need to break this into two seperate execution stages over several hours/days, one for loading USD and another for paying out.
   //Bank->USD
-  private void placeUSDDespoit(double toPurchaseForCycle) {
-    //TODO
+  private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
+    if (toPurchaseForCycle <= 0) return;
+
+    List<CoinbaseAccount> pmts = paymentService.getCoinbaseAccounts();
+    CoinbaseAccount usdDepositer = null;
+//    for (PaymentType pmt : pmts) {
+//      if (pmt.getCurrency().equalsIgnoreCase("USD")) {
+//        usdDepositer = pmt;
+//      }
+//    }
+    usdDepositer = paymentService.getCoinbaseAccounts().get(4);
+  // usdDepositer = paymentService.getPaymentTypes().get(3);
+    /*
+    PaymentType{id='b22911ee-ef35-5c97-bdd4-aef3f65618d9', type='fiat_account', name='GBP Wallet', currency='GBP', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@4f99769a}
+    PaymentType{id='e49c8d15-547b-464e-ac3d-4b9d20b360ec', type='fiat_account', name='USD Wallet', currency='USD', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@196c6487}
+    PaymentType{id='ec3c2e04-e877-4c21-b6d2-1f26744c00c3', type='fiat_account', name='EUR Wallet', currency='EUR', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@ec949f6}
+    PaymentType{id='123bbe6f-28c3-4e47-9be5-300b628f80a0', type='bank_wire', name='Bank Wire The Toronto-Dominion Bank ******2778', currency='USD', primary_buy=false, primary_sell=false, allow_buy=false, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@2bb77ffb}
+    PaymentType{id='6a23926d-74b6-4373-8434-9d437c2bafb2', type='ach_bank_account', name='TD Bank ******2778', currency='USD', primary_buy=true, primary_sell=true, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@2f9ef1b1}
+     */
+//    double accountLimit = usdDepositer.getLimits().getDeposit()[0].getRemaining().getAmount().doubleValue();
+//    if (accountLimit < toPurchaseForCycle) {
+//      throw new InsufficientResourcesException("Not enough payment method limit to order USD");
+//    }
+    PaymentResponse res = depositService.depositViaCoinbase(BigDecimal.valueOf(2), "USD", usdDepositer.getId());
+    log.error(res.toString());
   }
 
   //USD->Crypto
@@ -185,7 +212,7 @@ public class ExecuteApiController implements ExecuteApi {
     price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
     BigDecimal sizeBTC = toPayUSD.divide(price);
-    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE);//Post_only
+    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
     orderService.createOrder(ourOrder);
     ourOpenOrders.add(ourOrder); //TODO do we really need this?
     //Use NewLimitOrderSingle
@@ -216,11 +243,11 @@ public class ExecuteApiController implements ExecuteApi {
 
   private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
     //Use MarketDataService highest BID.
-    MarketData data = marketDataService.getMarketDataOrderBook(currency.toString(), "1");
+    MarketData data = marketDataService.getMarketDataOrderBook(currency.toString() + "-USD", "1");
     List<OrderItem> bids = data.getBids();
     OrderItem highestBid = null;
     for (OrderItem bid : bids) {
-      if (highestBid == null | bid.getPrice().doubleValue() > highestBid.getPrice().doubleValue()) {
+      if (highestBid == null || bid.getPrice().doubleValue() > highestBid.getPrice().doubleValue()) {
         highestBid = bid;
       }
     }
