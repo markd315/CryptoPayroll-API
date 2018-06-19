@@ -72,7 +72,7 @@ public class ExecuteApiController implements ExecuteApi {
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception {
     List<OneTimeOrder> oneTime = null;
-    ourOrderIsUnfilled();
+    System.out.println(cancelOrderForUsdReturnAmountAlreadySpent());
     try {
       oneTime = service.getAllOneTimeOrders();
     } catch (Exception e1) {
@@ -151,6 +151,7 @@ public class ExecuteApiController implements ExecuteApi {
     }
     com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
     double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
+    orderService.cancelOrder(order.getId());
     /*for (com.coinbase.exchange.api.orders.Order order : openOrders) {
       filledAmount += order.getFilled_size()/order.getSize();
     }*/
