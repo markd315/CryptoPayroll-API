@@ -5,6 +5,7 @@ import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.repo.OrderRepo;
 import io.swagger.repo.RecurringRepo;
+import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,22 @@ public class UltiOrderService {
   }
 
   public void incrementOrResetAllRecurringOrders() {
-    //TODO
+    List<RecurringOrder> list = recurringRepository.findAll();
+    for (RecurringOrder recurring : list) {
+      recurring.setCyclesSinceLast(recurring.getCyclesSinceLast() + 1); //Increment our cyclical field.
+      if (recurring.getCyclesSinceLast() == recurring.getCyclePeriod()) {
+        recurring.setCyclesSinceLast(0); //reset the cyclical field
+      }
+      if (recurringRepository.findById(recurring.getOrder().getId()) != null) //Only save if we can find a version of this already
+      {
+        recurringRepository.save(recurring);
+      } else {
+        try {
+          throw new UnexpectedException("Tried to update entry that does not exist!");
+        } catch (UnexpectedException e) {
+          e.printStackTrace();
+        }
+      }
+    }
   }
 }

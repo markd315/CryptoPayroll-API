@@ -64,9 +64,14 @@ public class ExecuteApiController implements ExecuteApi {
     } catch (Exception e1) {
       e1.printStackTrace();
     }
+
     for (RecurringOrder recurring : toExtractSingle) {
-      oneTime.add(recurring.getOrder());
+      if (recurring.getCyclesSinceLast() + 1 == recurring.getCyclePeriod()) { //If we are executing payroll for this recurringOrder
+        oneTime.add(recurring.getOrder()); //add it to the ones we are executing.
+      }
     }
+
+    service.incrementOrResetAllRecurringOrders();
 
     double amountWeOwePayees = balanceApiController.calculateOwed("USD").getBody();
 
@@ -78,7 +83,7 @@ public class ExecuteApiController implements ExecuteApi {
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 0) {
       try {
-        Thread.sleep(1000);
+        Thread.sleep(500);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
@@ -88,13 +93,12 @@ public class ExecuteApiController implements ExecuteApi {
     }
     //Order for crypto is filled, just nest for all cryptocurrencies, checking for 0.
 
-    ResponseEntity<List<Object>> ordersResponse = queueApiController.returnOrders();
-    List<Object> ordersToFill = ordersResponse.getBody();
+    List<Order> ordersToFill = oneTime;
+
     for (Object orderObject : ordersToFill) {
       Order order = (Order) orderObject;
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
     }
-    incrementOrResetAllRecurringPayments();
 
     //access services like this!
     //String paymentTypeId = paymentService.getPaymentTypes().get(0).getId();
