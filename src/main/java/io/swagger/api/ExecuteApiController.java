@@ -4,11 +4,13 @@ import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
 import com.coinbase.exchange.api.entity.NewOrderSingle;
+import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
 import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.orders.OrderService;
 import com.coinbase.exchange.api.payments.PaymentService;
+import com.coinbase.exchange.api.payments.PaymentType;
 import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
@@ -19,6 +21,7 @@ import io.swagger.services.UltiOrderService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.naming.InsufficientResourcesException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +72,13 @@ public class ExecuteApiController implements ExecuteApi {
 
 
   public ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
+      @ApiParam(value = "confirm code", required = true)
+      @RequestHeader(value = "code", required = true)
+          String code)
+      throws InsufficientResourcesException {
+    //TODO remove
+    placeUSDDespoit(32.21);
+
     List<OneTimeOrder> oneTime = null;
     try {
       oneTime = service.getAllOneTimeOrders();
@@ -115,34 +124,6 @@ public class ExecuteApiController implements ExecuteApi {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
     }
 
-    //access services like this!
-    //String paymentTypeId = paymentService.getPaymentTypes().get(0).getId();
-    //PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", paymentTypeId);
-    //TODO npe next line
-
-    //TODO a bunch of summation logic, then a bunch of API hits, as shown.
-    //TODO after we successfully order each type of the crypto, release it to its owners.
-    /*JSONObject body = new JSONObject("{\n"
-        + "    \"amount\": 10.00,\n"
-        + "    \"currency\": \"USD\",\n"
-        + "    \"payment_method_id\": \"bc677162-d934-5f1a-968c-a496b1c1270b\"\n"
-        + "}");
-
-    JSONObject res = null;
-    try {
-      res = } catch (IOException e) {
-      e.printStackTrace();
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
-    System.out.println(res.toString());
-    service.incrementOrResetAllRecurringOrders();
-    try {
-      service.wipeAllOneTimeOrders();
-    } catch (NotFoundException e) {
-      e.printStackTrace();
-    }
-    */
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
@@ -173,8 +154,27 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Bank->USD
-  private void placeUSDDespoit(double toPurchaseForCycle) {
-    //TODO
+  private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
+    List<PaymentType> pmts = paymentService.getPaymentTypes();
+    PaymentType usdDepositer = null;
+    for (PaymentType pmt : pmts) {
+      if (pmt.getCurrency().equalsIgnoreCase("USD")) {
+        usdDepositer = pmt;
+      }
+    }
+    /*
+    PaymentType{id='b22911ee-ef35-5c97-bdd4-aef3f65618d9', type='fiat_account', name='GBP Wallet', currency='GBP', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@4f99769a}
+    PaymentType{id='e49c8d15-547b-464e-ac3d-4b9d20b360ec', type='fiat_account', name='USD Wallet', currency='USD', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@196c6487}
+    PaymentType{id='ec3c2e04-e877-4c21-b6d2-1f26744c00c3', type='fiat_account', name='EUR Wallet', currency='EUR', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@ec949f6}
+    PaymentType{id='123bbe6f-28c3-4e47-9be5-300b628f80a0', type='bank_wire', name='Bank Wire The Toronto-Dominion Bank ******2778', currency='USD', primary_buy=false, primary_sell=false, allow_buy=false, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@2bb77ffb}
+    PaymentType{id='6a23926d-74b6-4373-8434-9d437c2bafb2', type='ach_bank_account', name='TD Bank ******2778', currency='USD', primary_buy=true, primary_sell=true, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@2f9ef1b1}
+     */
+    double accountLimit = usdDepositer.getLimits().getDeposit()[0].getRemaining().getAmount().doubleValue();
+    if (accountLimit < toPurchaseForCycle) {
+      throw new InsufficientResourcesException("Not enough payment method limit to order USD");
+    }
+    PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(toPurchaseForCycle), "USD", usdDepositer.getId());
+
   }
 
   //USD->Crypto
