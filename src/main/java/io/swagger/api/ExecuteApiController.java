@@ -92,7 +92,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     service.incrementOrResetAllRecurringOrders();
 
-    double amountWeOwePayees = balanceApiController.calculateOwed("USD").getBody();
+    double amountWeOwePayees = balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.USD);
 
     double usdWeOwn = queryAccountBalance();
 
@@ -102,9 +102,9 @@ public class ExecuteApiController implements ExecuteApi {
     //account loaded with cash
     double[]
         owed =
-        {balanceApiController.calculateOwed("BTC").getBody(), balanceApiController.calculateOwed("ETH").getBody(),
-            balanceApiController.calculateOwed("LTC").getBody()};
-    String[] currCodes = {"BTC", "ETH", "LTC"};
+        {balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.BTC), balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.ETH),
+            balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.LTC)};
+    String[] currCodes = {Order.CurrencyEnum.BTC.toString(), Order.CurrencyEnum.ETH.toString(), Order.CurrencyEnum.LTC.toString()};
     for (int i = 0; i < 3; i++) {
       orderCurrencyProtocol(owed[i], currCodes[i]);
     }
