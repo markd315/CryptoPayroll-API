@@ -71,10 +71,10 @@ public class BalanceApiController implements BalanceApi {
     }
   }
 
-    private double getOrderAmountForOrder(Order.CurrencyEnum requestedCurrency, Order order) {
-        if (requestedCurrency == order.getCurrency()) {
-            return order.getQuantity();
-        }
+  private double getOrderAmountForOrder(Order.CurrencyEnum requestedCurrency, Order order) {
+    if (requestedCurrency == order.getCurrency() || requestedCurrency == USD) {
+      return order.getQuantity();
+    }
 
     return 0;
   }
