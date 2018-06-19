@@ -72,6 +72,7 @@ public class ExecuteApiController implements ExecuteApi {
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
     List<OneTimeOrder> oneTime = null;
+    ourOrderIsUnfilled();
     try {
       oneTime = service.getAllOneTimeOrders();
     } catch (Exception e1) {
@@ -171,8 +172,15 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private boolean ourOrderIsUnfilled() {
-    //TODO
-    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
+    try {
+      Thread.sleep(334);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    List<com.coinbase.exchange.api.orders.Order> openOrders = orderService.getOpenOrders();
+    if (openOrders.isEmpty()) {
+      return false;
+    }
     return true;
   }
 
