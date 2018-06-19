@@ -156,6 +156,8 @@ public class ExecuteApiController implements ExecuteApi {
 
   //Bank->USD
   private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
+    if (toPurchaseForCycle <= 0) return;
+
     List<PaymentType> pmts = paymentService.getPaymentTypes();
     PaymentType usdDepositer = null;
     for (PaymentType pmt : pmts) {
@@ -163,6 +165,7 @@ public class ExecuteApiController implements ExecuteApi {
         usdDepositer = pmt;
       }
     }
+  // usdDepositer = paymentService.getPaymentTypes().get(3);
     /*
     PaymentType{id='b22911ee-ef35-5c97-bdd4-aef3f65618d9', type='fiat_account', name='GBP Wallet', currency='GBP', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@4f99769a}
     PaymentType{id='e49c8d15-547b-464e-ac3d-4b9d20b360ec', type='fiat_account', name='USD Wallet', currency='USD', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@196c6487}
@@ -174,7 +177,7 @@ public class ExecuteApiController implements ExecuteApi {
     if (accountLimit < toPurchaseForCycle) {
       throw new InsufficientResourcesException("Not enough payment method limit to order USD");
     }
-    PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(toPurchaseForCycle), "USD", usdDepositer.getId());
+    PaymentResponse res = depositService.depositViaPaymentMethod(BigDecimal.valueOf(toPurchaseForCycle), "USD", usdDepositer.getId());
 
   }
 
@@ -186,7 +189,7 @@ public class ExecuteApiController implements ExecuteApi {
     price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
     BigDecimal sizeBTC = toPayUSD.divide(price);
-    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE);//Post_only
+    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
     orderService.createOrder(ourOrder);
     ourOpenOrders.add(ourOrder); //TODO do we really need this?
     //Use NewLimitOrderSingle
@@ -217,11 +220,11 @@ public class ExecuteApiController implements ExecuteApi {
 
   private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
     //Use MarketDataService highest BID.
-    MarketData data = marketDataService.getMarketDataOrderBook(currency.toString(), "1");
+    MarketData data = marketDataService.getMarketDataOrderBook(currency.toString() + "-USD", "1");
     List<OrderItem> bids = data.getBids();
     OrderItem highestBid = null;
     for (OrderItem bid : bids) {
-      if (highestBid == null | bid.getPrice().doubleValue() > highestBid.getPrice().doubleValue()) {
+      if (highestBid == null || bid.getPrice().doubleValue() > highestBid.getPrice().doubleValue()) {
         highestBid = bid;
       }
     }

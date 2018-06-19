@@ -25,6 +25,7 @@ dependencies {
     compile 'javax.validation:validation-api:1.1.0.Final'
     compile 'commons-codec:commons-codec:1.9'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'org.knowm.xchange:xchange-gdax:4.3.7'
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
