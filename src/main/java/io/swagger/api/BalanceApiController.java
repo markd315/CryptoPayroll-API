@@ -69,9 +69,9 @@ public class BalanceApiController implements BalanceApi {
 
   private double getOrderAmountForOrder(Order.CurrencyEnum requestedCurrency, Order order) {
     if (requestedCurrency == order.getCurrency()) {
-      return order.getQuantity();
+      return price.getAmountOfCoinFor(order);
     } else if (requestedCurrency == USD) {
-      return price.getUSDFor(order);
+      return order.getQuantity();
     }
 
     return 0;
@@ -90,18 +90,18 @@ public class BalanceApiController implements BalanceApi {
     public double LTC;
     public double ETH;
 
-    public double getUSDFor(Order order) {
-      return getUSDFor(order.getCurrency(), order.getQuantity());
+    public double getAmountOfCoinFor(Order order) {
+      return getAmountOfCoinFor(order.getCurrency(), order.getQuantity());
     }
 
-    public double getUSDFor(Order.CurrencyEnum currency, double qty) {
+    public double getAmountOfCoinFor(Order.CurrencyEnum currency, double qty) {
       switch (currency) {
         case BTC:
-          return qty / BTC;
+          return qty * BTC;
         case ETH:
-          return qty / ETH;
+          return qty * ETH;
         case LTC:
-          return qty / LTC;
+          return qty * LTC;
         default:
           throw new IllegalArgumentException(currency.name() + " is unknown");
       }
