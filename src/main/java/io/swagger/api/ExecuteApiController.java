@@ -111,8 +111,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     JSONObject res = null;
     try {
-      res = GDAXAuthorizer.makeGDAXRequest(new HashMap<String, String>(), body, HttpMethod.POST, "/deposits/payment-method");
-    } catch (IOException e) {
+      res = } catch (IOException e) {
       e.printStackTrace();
     } catch (URISyntaxException e) {
       e.printStackTrace();
