@@ -10,6 +10,7 @@ import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
 import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.orders.OrderService;
+import com.coinbase.exchange.api.payments.CoinbaseAccount;
 import com.coinbase.exchange.api.payments.PaymentService;
 import com.coinbase.exchange.api.payments.PaymentType;
 import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
@@ -158,13 +159,14 @@ public class ExecuteApiController implements ExecuteApi {
   private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
     if (toPurchaseForCycle <= 0) return;
 
-    List<PaymentType> pmts = paymentService.getPaymentTypes();
-    PaymentType usdDepositer = null;
-    for (PaymentType pmt : pmts) {
-      if (pmt.getCurrency().equalsIgnoreCase("USD")) {
-        usdDepositer = pmt;
-      }
-    }
+    List<CoinbaseAccount> pmts = paymentService.getCoinbaseAccounts();
+    CoinbaseAccount usdDepositer = null;
+//    for (PaymentType pmt : pmts) {
+//      if (pmt.getCurrency().equalsIgnoreCase("USD")) {
+//        usdDepositer = pmt;
+//      }
+//    }
+    usdDepositer = paymentService.getCoinbaseAccounts().get(4);
   // usdDepositer = paymentService.getPaymentTypes().get(3);
     /*
     PaymentType{id='b22911ee-ef35-5c97-bdd4-aef3f65618d9', type='fiat_account', name='GBP Wallet', currency='GBP', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@4f99769a}
@@ -173,12 +175,12 @@ public class ExecuteApiController implements ExecuteApi {
     PaymentType{id='123bbe6f-28c3-4e47-9be5-300b628f80a0', type='bank_wire', name='Bank Wire The Toronto-Dominion Bank ******2778', currency='USD', primary_buy=false, primary_sell=false, allow_buy=false, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@2bb77ffb}
     PaymentType{id='6a23926d-74b6-4373-8434-9d437c2bafb2', type='ach_bank_account', name='TD Bank ******2778', currency='USD', primary_buy=true, primary_sell=true, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@2f9ef1b1}
      */
-    double accountLimit = usdDepositer.getLimits().getDeposit()[0].getRemaining().getAmount().doubleValue();
-    if (accountLimit < toPurchaseForCycle) {
-      throw new InsufficientResourcesException("Not enough payment method limit to order USD");
-    }
-    PaymentResponse res = depositService.depositViaPaymentMethod(BigDecimal.valueOf(toPurchaseForCycle), "USD", usdDepositer.getId());
-
+//    double accountLimit = usdDepositer.getLimits().getDeposit()[0].getRemaining().getAmount().doubleValue();
+//    if (accountLimit < toPurchaseForCycle) {
+//      throw new InsufficientResourcesException("Not enough payment method limit to order USD");
+//    }
+    PaymentResponse res = depositService.depositViaCoinbase(BigDecimal.valueOf(2), "USD", usdDepositer.getId());
+    log.error(res.toString());
   }
 
   //USD->Crypto
