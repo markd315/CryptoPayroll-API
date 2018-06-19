@@ -36,10 +36,6 @@ public class RecurringOrder {
     return this;
   }
 
-  @JsonProperty("id")
-  @Id
-  private UUID id;
-
   /**
    * Get order
    * @return order
