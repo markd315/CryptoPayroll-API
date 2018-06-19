@@ -102,7 +102,7 @@ public class RecurringApiController implements RecurringApi {
     String accept = request.getHeader("Accept");
 
     try {
-      service.updateRecurringOrder(body);
+      service.updateRecurringOrder(body, UUID.fromString(target));
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
