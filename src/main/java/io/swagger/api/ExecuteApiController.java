@@ -79,24 +79,23 @@ public class ExecuteApiController implements ExecuteApi {
 
     double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
     //account loaded with cash
-    placeOrderForUsd(toPurchaseForCycle);
+    placeOrderForUsdAmount(toPurchaseForCycle);
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 0) {
       try {
-        Thread.sleep(500);
+        Thread.sleep(334);//Strictest rate limit is 3 per second
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
       amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
       toPurchaseForCycle -= amountOrderFilledFor;
-      placeOrderForUsd(toPurchaseForCycle);
+      placeOrderForUsdAmount(toPurchaseForCycle);
     }
-    //Order for crypto is filled, just nest for all cryptocurrencies, checking for 0.
 
+    //Order for money to buy the crypto is filled, just nest for all cryptocurrencies, checking for 0.
     List<Order> ordersToFill = oneTime;
 
-    for (Object orderObject : ordersToFill) {
-      Order order = (Order) orderObject;
+    for (Order order : ordersToFill) {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
     }
 
@@ -138,23 +137,24 @@ public class ExecuteApiController implements ExecuteApi {
 
   private boolean ourOrderIsUnfilled() {
     //TODO
+    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     return true;
   }
 
-  private void placeOrderForUsd(double toPurchaseForCycle) {
+  private void placeOrderForUsdAmount(double toPurchaseForCycle) {
     //TODO
+    //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
+    //Make sure that we only make one request per call, or that we use Thread.sleep(334) between calls.
   }
 
   private double queryAccountBalance() {
     //TODO
+    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     return 0.0;
   }
 
   private void payAmountToWallet(double toPay, String address, Order.CurrencyEnum currency, Order.DestinationTypeEnum destinationType) {
     //TODO
-  }
-
-  private void incrementOrResetAllRecurringPayments() {
-    //TODO
+    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
   }
 }
