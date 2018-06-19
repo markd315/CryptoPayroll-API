@@ -1,0 +1,14 @@
+gdax:
+  api:
+    baseUrl: "https://api-public.sandbox.gdax.com"
+    #Change above field for prod
+  key: "05a14269090872efbd71dee7732ae91e"
+  secret: "UnUebsUpYTG+pl6VU7pD1US1GxFkmupok5xE4Y9RZ+u0YPrzJlamzxyrur5SgnZHHiL55uR9j+xmqF6qlRmZYA=="
+  passphrase: "tastycrypto1997"
+
+websocket:
+  baseUrl: "wss://ws-feed-public.sandbox.gdax.com"
+  #baseUrl: "wss://ws-feed.gdax.com/"
+
+gui:
+  enabled: false

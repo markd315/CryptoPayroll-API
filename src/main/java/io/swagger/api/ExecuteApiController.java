@@ -1,18 +1,16 @@
 package io.swagger.api;
 
+import com.coinbase.exchange.api.deposits.DepositService;
+import com.coinbase.exchange.api.entity.PaymentResponse;
+import com.coinbase.exchange.api.payments.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
-import io.swagger.configuration.GDAXAuthorizer;
 import io.swagger.services.OrderService;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.math.BigDecimal;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,9 +52,16 @@ public class ExecuteApiController implements ExecuteApi {
     } catch (Exception e1) {
       e1.printStackTrace();
     }*/
-    //TODO a bunch of summation logic, then a bunch of API hits.
+    double usdToPurchase = 332.12;
+    DepositService depositer = new DepositService();
+    PaymentService paymentService = new PaymentService();
+    System.out.println(paymentService.getPaymentTypes().get(0));
+    PaymentResponse res = depositer.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", "bc677162-d934-5f1a-968c-a496b1c1270b");
+    System.out.println(res.toString());
+
+    //TODO a bunch of summation logic, then a bunch of API hits, as shown.
     //TODO after we successfully order each type of the crypto, release it to its owners.
-    JSONObject body = new JSONObject("{\n"
+    /*JSONObject body = new JSONObject("{\n"
         + "    \"amount\": 10.00,\n"
         + "    \"currency\": \"USD\",\n"
         + "    \"payment_method_id\": \"bc677162-d934-5f1a-968c-a496b1c1270b\"\n"
@@ -77,7 +82,7 @@ public class ExecuteApiController implements ExecuteApi {
     } catch (NotFoundException e) {
       e.printStackTrace();
     }
-
+    */
     return new ResponseEntity<Void>(/*(MultiValueMap<String, String>) toReturn,*/
         HttpStatus.OK);
   }
