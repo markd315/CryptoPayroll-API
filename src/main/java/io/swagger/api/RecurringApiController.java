@@ -50,13 +50,13 @@ public class RecurringApiController implements RecurringApi {
       if(body == null) {
         throw new NullPointerException("Request body cannot be null");
       }
+      //cyclePeriod should be set by the user and adding recurring order should not affact the period
       service.addOrder(body.getOrder());
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<Void>(HttpStatus.OK);
-    //TODO update cyclePeriod & cyclesSinceLast
   }
 
   public ResponseEntity<Void> deleteRecurring(
