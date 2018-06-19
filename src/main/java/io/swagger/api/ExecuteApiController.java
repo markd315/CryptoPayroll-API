@@ -17,6 +17,8 @@ import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
+
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,13 +70,12 @@ public class ExecuteApiController implements ExecuteApi {
     this.service = service;
   }
 
-
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
-    List<OneTimeOrder> oneTime = null;
+    List<Order> ordersToFill = new ArrayList();
     ourOrderIsUnfilled();
     try {
-      oneTime = service.getAllOneTimeOrders();
+      ordersToFill.addAll(service.getAllOneTimeOrders());
     } catch (Exception e1) {
       e1.printStackTrace();
     }
@@ -87,9 +88,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     for (RecurringOrder recurring : toExtractSingle) {
       if (recurring.getCyclesSinceLast() + 1 == recurring.getCyclePeriod()) { //If we are executing payroll for this recurringOrder
-        oneTime.add(new OneTimeOrder(recurring.getId(), recurring.getQuantity(), recurring.getDestination(), recurring.getCurrency(),
-            recurring.getDestinationType(),
-            false, false)); //add it to the ones we are executing.
+        ordersToFill.add(recurring); //add it to the ones we are executing.
       }
     }
 
@@ -114,7 +113,6 @@ public class ExecuteApiController implements ExecuteApi {
     }
 
     //Order for money to buy the crypto is filled, just nest for all cryptocurrencies, checking for 0.
-    List<OneTimeOrder> ordersToFill = oneTime;
 
     for (Order order : ordersToFill) {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
