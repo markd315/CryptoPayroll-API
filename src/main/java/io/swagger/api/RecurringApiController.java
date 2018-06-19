@@ -11,16 +11,13 @@ import io.swagger.services.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.BooleanOperators;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.List;
 import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
@@ -76,6 +73,7 @@ public class RecurringApiController implements RecurringApi {
       e.printStackTrace();
     }
     return new ResponseEntity<Order>(toReturn, HttpStatus.OK);
+
   }
 
   public ResponseEntity<Void> updateRecurring(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody RecurringOrder body,
