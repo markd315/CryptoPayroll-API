@@ -32,14 +32,7 @@ public class OrderService {
   }
 
   public void addOrder(Order body) {
-    try {
-      Order order = orderRepository.findById(body.getId());
-      if (order == null) {
-        throw new NotFoundException(404, "No such order");
-      }
-    } catch (Exception e1) {
       orderRepository.save(body);
-    }
   }
 
   public List<Order> getAllOneTimeOrders() throws NotFoundException {
