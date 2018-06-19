@@ -43,20 +43,19 @@ public class BonusApiController implements BonusApi {
     this.service = orderService;
   }
 
-  public ResponseEntity<Order> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody OneTimeOrder body) {
+  public ResponseEntity<OneTimeOrder> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody OneTimeOrder body) {
     body.filled(false).id(UUID.randomUUID());//Server overridden fields
     if (body.getCurrency() == Order.CurrencyEnum.USD) {
       return ResponseEntity.badRequest().build();
     }
-
-    service.addOrder(body);
-    Order toReturn = null;
+    service.addOneTimeOrder(body);
+    OneTimeOrder toReturn = null;
     try {
-      toReturn = service.findOrderById(body.getId());
+      toReturn = service.findOneTimeOrderById(body.getId());
     } catch (Exception e1) {
       e1.printStackTrace();
     }
-    return new ResponseEntity<Order>(toReturn,
+    return new ResponseEntity<OneTimeOrder>(toReturn,
         HttpStatus.OK);
   }
 }
