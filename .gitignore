@@ -8,3 +8,5 @@ target/
 build/
 out/
 .idea/
+.keystore
+src/resources/application.yml

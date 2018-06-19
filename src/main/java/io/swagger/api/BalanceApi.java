@@ -27,7 +27,7 @@ public interface BalanceApi {
   @RequestMapping(value = "/balance",
       produces = {"application/json"},
       method = RequestMethod.GET)
-  ResponseEntity<Object> calculateOwed(
-      @ApiParam(value = "Three character currency code", required = true, allowableValues = "USD, BTC, LTC, ETH") @RequestHeader(value = "currency", required = true) String currency) throws NotFoundException;
+  ResponseEntity<Double> calculateOwed(
+      @ApiParam(value = "Three character currency code", required = true, allowableValues = "USD, BTC, LTC, ETH") @RequestHeader(value = "currency", required = true) String currency);
 
 }

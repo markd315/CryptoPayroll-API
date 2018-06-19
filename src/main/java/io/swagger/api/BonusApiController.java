@@ -2,9 +2,9 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
-import io.swagger.services.OrderService;
-import java.util.List;
+import io.swagger.services.UltiOrderService;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -33,16 +33,16 @@ public class BonusApiController implements BonusApi {
   private final HttpServletRequest request;
 
   @Autowired
-  private final OrderService service;
+  private final UltiOrderService service;
 
-  @org.springframework.beans.factory.annotation.Autowired
-  public BonusApiController(ObjectMapper objectMapper, HttpServletRequest request, OrderService orderService) {
+  @Autowired
+  public BonusApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService orderService) {
     this.objectMapper = objectMapper;
     this.request = request;
     this.service = orderService;
   }
 
-  public ResponseEntity<Order> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody Order body) {
+  public ResponseEntity<Order> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody OneTimeOrder body) {
     body.filled(false).id(UUID.randomUUID());//Server overridden fields
     service.addOrder(body);
     Order toReturn = null;

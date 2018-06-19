@@ -1,31 +1,96 @@
 package io.swagger.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Objects;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.springframework.data.annotation.Id;
-import org.springframework.validation.annotation.Validated;
 
-/**
- * Order
- */
-@Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
+public interface Order {
+  Order id(UUID id);
 
-public class Order {
-  @JsonProperty("id")
-  @Id
-  private UUID id = null;
+  /**
+   * Overwritten by server
+   * @return id
+   **/
+  @ApiModelProperty(value = "Overwritten by server")
+
+  @Valid
+  UUID getId();
+
+  void setId(UUID id);
+
+  Order currency(OneTimeOrder.CurrencyEnum currency);
+
+  /**
+   * Three-digit trade code
+   * @return currency
+   **/
+  @ApiModelProperty(required = true, value = "Three-digit trade code")
+  @NotNull
+  OneTimeOrder.CurrencyEnum getCurrency();
+
+  void setCurrency(OneTimeOrder.CurrencyEnum currency);
+
+  Order quantity(Double quantity);
+
+  /**
+   * Amount of currency to send
+   * @return quantity
+   **/
+  @ApiModelProperty(required = true, value = "Amount of currency to send")
+  @NotNull
+  double getQuantity();
+
+  void setQuantity(Double quantity);
+
+  Order destination(String destination);
+
+  /**
+   * Get destination
+   * @return destination
+   **/
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+  String getDestination();
+
+  void setDestination(String destination);
+
+  Order destinationType(OneTimeOrder.DestinationTypeEnum destinationType);
+
+  /**
+   * Get destinationType
+   * @return destinationType
+   **/
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+  OneTimeOrder.DestinationTypeEnum getDestinationType();
+
+  void setDestinationType(OneTimeOrder.DestinationTypeEnum destinationType);
+
+  Order filled(Boolean filled);
+
+  /**
+   * Overwritten by server
+   * @return filled
+   **/
+  @ApiModelProperty(value = "Overwritten by server")
+  boolean isFilled();
+
+  void setFilled(Boolean filled);
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  String toIndentedString(Object o);
+
+  boolean isRecurring();
 
   /**
    * Three-digit trade code
    */
-  public enum CurrencyEnum {
+  enum CurrencyEnum {
     BTC("BTC"),
 
     ETH("ETH"),
@@ -56,15 +121,6 @@ public class Order {
       return null;
     }
   }
-
-  @JsonProperty("currency")
-  private CurrencyEnum currency = null;
-
-  @JsonProperty("quantity")
-  private Double quantity = null;
-
-  @JsonProperty("destination")
-  private String destination = null;
 
   /**
    * Gets or Sets destinationType
@@ -97,178 +153,4 @@ public class Order {
     }
   }
 
-  @JsonProperty("destinationType")
-  private DestinationTypeEnum destinationType = null;
-
-  @JsonProperty("filled")
-  private Boolean filled = null;
-
-  public Order id(UUID id) {
-    this.id = id;
-    return this;
-  }
-
-  /**
-   * Overwritten by server
-   * @return id
-   **/
-  @ApiModelProperty(value = "Overwritten by server")
-
-  @Valid
-
-  public UUID getId() {
-    return id;
-  }
-
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public Order currency(CurrencyEnum currency) {
-    this.currency = currency;
-    return this;
-  }
-
-  /**
-   * Three-digit trade code
-   * @return currency
-   **/
-  @ApiModelProperty(required = true, value = "Three-digit trade code")
-  @NotNull
-
-  public CurrencyEnum getCurrency() {
-    return currency;
-  }
-
-  public void setCurrency(CurrencyEnum currency) {
-    this.currency = currency;
-  }
-
-  public Order quantity(Double quantity) {
-    this.quantity = quantity;
-    return this;
-  }
-
-  /**
-   * Amount of currency to send
-   * @return quantity
-   **/
-  @ApiModelProperty(required = true, value = "Amount of currency to send")
-  @NotNull
-
-  public Double getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(Double quantity) {
-    this.quantity = quantity;
-  }
-
-  public Order destination(String destination) {
-    this.destination = destination;
-    return this;
-  }
-
-  /**
-   * Get destination
-   * @return destination
-   **/
-  @ApiModelProperty(required = true, value = "")
-  @NotNull
-
-  public String getDestination() {
-    return destination;
-  }
-
-  public void setDestination(String destination) {
-    this.destination = destination;
-  }
-
-  public Order destinationType(DestinationTypeEnum destinationType) {
-    this.destinationType = destinationType;
-    return this;
-  }
-
-  /**
-   * Get destinationType
-   * @return destinationType
-   **/
-  @ApiModelProperty(required = true, value = "")
-  @NotNull
-
-  public DestinationTypeEnum getDestinationType() {
-    return destinationType;
-  }
-
-  public void setDestinationType(DestinationTypeEnum destinationType) {
-    this.destinationType = destinationType;
-  }
-
-  public Order filled(Boolean filled) {
-    this.filled = filled;
-    return this;
-  }
-
-  /**
-   * Overwritten by server
-   * @return filled
-   **/
-  @ApiModelProperty(value = "Overwritten by server")
-
-  public Boolean isFilled() {
-    return filled;
-  }
-
-  public void setFilled(Boolean filled) {
-    this.filled = filled;
-  }
-
-
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Order order = (Order) o;
-    return Objects.equals(this.id, order.id) &&
-        Objects.equals(this.currency, order.currency) &&
-        Objects.equals(this.quantity, order.quantity) &&
-        Objects.equals(this.destination, order.destination) &&
-        Objects.equals(this.destinationType, order.destinationType) &&
-        Objects.equals(this.filled, order.filled);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, currency, quantity, destination, destinationType, filled);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class Order {\n");
-
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
-    sb.append("    quantity: ").append(toIndentedString(quantity)).append("\n");
-    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
-    sb.append("    destinationType: ").append(toIndentedString(destinationType)).append("\n");
-    sb.append("    filled: ").append(toIndentedString(filled)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
 }
-

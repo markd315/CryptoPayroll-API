@@ -1,10 +1,13 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.services.UltiOrderService;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -18,16 +21,28 @@ public class QueueApiController implements QueueApi {
   private final ObjectMapper objectMapper;
 
   private final HttpServletRequest request;
+  private final UltiOrderService orderService;
 
-  @org.springframework.beans.factory.annotation.Autowired
-  public QueueApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+  @Autowired
+  public QueueApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService orderService) {
     this.objectMapper = objectMapper;
     this.request = request;
+    this.orderService = orderService;
   }
 
-  public ResponseEntity<Void> returnOrders() {
+  public ResponseEntity<List<Object>> returnOrders() {
     String accept = request.getHeader("Accept");
-    return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+    List<Object> currentOrders = new ArrayList<>();
+    try {
+      currentOrders.addAll(orderService.getAllRecurringOrders());
+      currentOrders.addAll(orderService.getAllOneTimeOrders());
+    } catch (NotFoundException e) {
+      log.error(e.getMessage(), e);
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok().body(currentOrders);
   }
+
 
 }
