@@ -84,18 +84,16 @@ public class ExecuteApiController implements ExecuteApi {
     double usdWeOwn = queryAccountBalance();
 
     double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
+    placeUSDOrder(toPurchaseForCycle);
+
     //account loaded with cash
-    placeOrderForUsdAmount(toPurchaseForCycle);
-    double amountOrderFilledFor = Double.MAX_VALUE;
-    while (toPurchaseForCycle > 0) {
-      try {
-        Thread.sleep(334);//Strictest rate limit is 3 per second
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
-      toPurchaseForCycle -= amountOrderFilledFor;
-      placeOrderForUsdAmount(toPurchaseForCycle);
+    double[]
+        owed =
+        {balanceApiController.calculateOwed("BTC").getBody(), balanceApiController.calculateOwed("ETH").getBody(),
+            balanceApiController.calculateOwed("LTC").getBody()};
+    String[] currCodes = {"BTC", "ETH", "LTC"};
+    for (int i = 0; i < 3; i++) {
+      orderCurrencyProtocol(owed[i], currCodes[i]);
     }
 
     //Order for money to buy the crypto is filled, just nest for all cryptocurrencies, checking for 0.
@@ -136,6 +134,21 @@ public class ExecuteApiController implements ExecuteApi {
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
+  private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) {
+    placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
+    double amountOrderFilledFor = Double.MAX_VALUE;
+    while (toPurchaseForCycle > 0) {
+      try {
+        Thread.sleep(334);//Strictest rate limit is 3 per second
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+      toPurchaseForCycle -= amountOrderFilledFor;
+      placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
+    }
+  }
+
   private double cancelOrderForUsdReturnAmountAlreadySpent() {
     //TODO
     return 0.0;
@@ -147,8 +160,15 @@ public class ExecuteApiController implements ExecuteApi {
     return true;
   }
 
-  private void placeOrderForUsdAmount(double toPurchaseForCycle) {
+  //Bank->USD
+  private void placeUSDOrder(double toPurchaseForCycle) {
     //TODO
+  }
+
+  //USD->Crypto
+  private void placeOrderForUsdAmount(double toPurchaseForCycle, Order.CurrencyEnum currencyEnum) {
+    //TODO
+
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
     //Make sure that we only make one request per call, or that we use Thread.sleep(334) between calls.
   }
