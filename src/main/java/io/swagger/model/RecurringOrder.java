@@ -17,9 +17,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
-public class RecurringOrder implements Order {
-  @JsonProperty("order")
-  private OneTimeOrder order = null;
+public class RecurringOrder extends OneTimeOrder {
 
   @JsonProperty("cyclePeriod")
   private Integer cyclePeriod = 1;
@@ -27,20 +25,11 @@ public class RecurringOrder implements Order {
   @JsonProperty("cyclesSinceLast")
   private Integer cyclesSinceLast = 0;
 
-  @JsonProperty("id")
-  @Id
-  private UUID id = null;
-
-  @JsonProperty("currency")
-  private CurrencyEnum currency = null;
-
-  @JsonProperty("destinationType")
-  private DestinationTypeEnum destinationType = null;
-
-  public RecurringOrder order(OneTimeOrder order) {
-    this.order = order;
-    return this;
-  }
+//  public RecurringOrder order(OneTimeOrder order) {
+//    setOrder(order);
+//    recurring = true;
+//    return this;
+//  }
 
   /**
    * Get order
@@ -51,12 +40,17 @@ public class RecurringOrder implements Order {
 
   @Valid
 
-  public OneTimeOrder getOrder() {
-    return order;
+  public RecurringOrder getOrder() {
+    return this;
   }
 
   public void setOrder(OneTimeOrder order) {
-    this.order = order;
+    setId(order.getId());
+    setCurrency((order.getCurrency()));
+    setQuantity((order.getQuantity()));
+    setDestination(order.getDestination());
+    setDestinationType(order.getDestinationType());
+    setFilled(order.isFilled());
   }
 
   public RecurringOrder cyclePeriod(Integer cyclePeriod) {
@@ -107,14 +101,14 @@ public class RecurringOrder implements Order {
       return false;
     }
     RecurringOrder recurringOrder = (RecurringOrder) o;
-    return Objects.equals(this.order, recurringOrder.order) &&
+    return Objects.equals(this.getOrder(), recurringOrder.getOrder()) &&
         Objects.equals(this.cyclePeriod, recurringOrder.cyclePeriod) &&
         Objects.equals(this.cyclesSinceLast, recurringOrder.cyclesSinceLast);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(order, cyclePeriod, cyclesSinceLast);
+    return Objects.hash(getOrder(), cyclePeriod, cyclesSinceLast);
   }
 
   @Override
@@ -122,103 +116,103 @@ public class RecurringOrder implements Order {
     StringBuilder sb = new StringBuilder();
     sb.append("class RecurringOrder {\n");
 
-    sb.append("    order: ").append(toIndentedString(order)).append("\n");
+    sb.append("    order: ").append(toIndentedString(getOrder())).append("\n");
     sb.append("    cyclePeriod: ").append(toIndentedString(cyclePeriod)).append("\n");
     sb.append("    cyclesSinceLast: ").append(toIndentedString(cyclesSinceLast)).append("\n");
     sb.append("}");
     return sb.toString();
   }
-
+/*
   @Override
   public Order id(UUID id) {
-    return order.id(id);
+    return super.id(id);
   }
 
   @Override
   public UUID getId() {
-    return order.getId();
+    return super.getId();
   }
 
   @Override
   public void setId(UUID id) {
-    order.setId(id);
+    super.setId(id);
   }
 
   @Override
   public Order currency(CurrencyEnum currency) {
-    return order.currency(currency);
+    return super.currency(currency);
   }
 
   @Override
   public CurrencyEnum getCurrency() {
-    return order.getCurrency();
+    return super.getCurrency();
   }
 
   @Override
   public void setCurrency(CurrencyEnum currency) {
-    order.setCurrency(currency);
+    super.setCurrency(currency);
   }
 
   @Override
   public Order quantity(Double quantity) {
-    return order.quantity(quantity);
+    return super.quantity(quantity);
   }
 
   @Override
   public double getQuantity() {
-    return order.getQuantity();
+    return super.getQuantity();
   }
 
   @Override
   public void setQuantity(Double quantity) {
-    order.setQuantity(quantity);
+    super.setQuantity(quantity);
   }
 
   @Override
   public Order destination(String destination) {
-    return order.destination(destination);
+    return super.destination(destination);
   }
 
   @Override
   public String getDestination() {
-    return order.getDestination();
+    return super.getDestination();
   }
 
   @Override
   public void setDestination(String destination) {
-    order.setDestination(destination);
+    super.setDestination(destination);
   }
 
   @Override
   public Order destinationType(Order.DestinationTypeEnum destinationType) {
-    return order.destinationType(destinationType);
+    return super.destinationType(destinationType);
   }
 
   @Override
   public Order.DestinationTypeEnum getDestinationType() {
-    return order.getDestinationType();
+    return getDestinationType();
   }
 
   @Override
   public void setDestinationType(Order.DestinationTypeEnum destinationType) {
-    order.setDestinationType(destinationType);
+    setDestinationType(destinationType);
   }
 
   @Override
   public Order filled(Boolean filled) {
-    return order.filled(filled);
+    return super.filled(filled);
   }
 
   @Override
   public boolean isFilled() {
-    return order.isFilled();
+    return isFilled();
   }
 
   @Override
   public void setFilled(Boolean filled) {
-    order.setFilled(filled);
+    getOrder().setFilled(filled);
   }
-
+*/
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */

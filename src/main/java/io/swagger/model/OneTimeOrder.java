@@ -35,6 +35,9 @@ public class OneTimeOrder implements Order {
   @JsonProperty("filled")
   private Boolean filled = null;
 
+  @JsonProperty("recurring")
+  protected Boolean recurring = false;
+
   @Override
   public Order id(UUID id) {
     this.id = id;

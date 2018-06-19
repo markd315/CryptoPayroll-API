@@ -24,7 +24,7 @@ public class UltiOrderService {
   }
 
 
-  public OneTimeOrder findOrderById(UUID id) throws NotFoundException {
+  public OneTimeOrder findOneTimeOrderById(UUID id) throws NotFoundException {
     OneTimeOrder order = orderRepository.findById(id);
     if (order == null) {
       throw new NotFoundException(404, "No such order");
@@ -32,7 +32,15 @@ public class UltiOrderService {
     return order;
   }
 
-  public void addOrder(OneTimeOrder body) {
+  public RecurringOrder findRecurringOrderById(UUID id) throws NotFoundException {
+    RecurringOrder order = recurringRepository.findById(id);
+    if (order == null) {
+      throw new NotFoundException(404, "No such order");
+    }
+    return order;
+  }
+
+  public void addOneTimeOrder(OneTimeOrder body) {
     try {
       OneTimeOrder order = orderRepository.findById(body.getId());
       if (order == null) {
@@ -40,6 +48,17 @@ public class UltiOrderService {
       }
     } catch (Exception e1) {
       orderRepository.save(body);
+    }
+  }
+
+  public void addRecurringOrder(RecurringOrder body) {
+    try {
+      RecurringOrder order = recurringRepository.findById(body.getId());
+      if (order == null) {
+        throw new NotFoundException(404, "No such order");
+      }
+    } catch (Exception e1) {
+      recurringRepository.save(body);
     }
   }
 
