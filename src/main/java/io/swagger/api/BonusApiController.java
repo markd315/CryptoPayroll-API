@@ -2,6 +2,7 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.services.UltiOrderService;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class BonusApiController implements BonusApi {
     this.service = orderService;
   }
 
-  public ResponseEntity<Order> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody Order body) {
+  public ResponseEntity<Order> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody OneTimeOrder body) {
     body.filled(false).id(UUID.randomUUID());//Server overridden fields
     service.addOrder(body);
     Order toReturn = null;

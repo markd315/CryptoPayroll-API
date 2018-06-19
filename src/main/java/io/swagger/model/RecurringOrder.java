@@ -17,9 +17,9 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
-public class RecurringOrder {
+public class RecurringOrder implements Order {
   @JsonProperty("order")
-  private Order order = null;
+  private OneTimeOrder order = null;
 
   @JsonProperty("cyclePeriod")
   private Integer cyclePeriod = 1;
@@ -31,7 +31,7 @@ public class RecurringOrder {
   @Id
   private UUID id = null;
 
-  public RecurringOrder order(Order order) {
+  public RecurringOrder order(OneTimeOrder order) {
     this.order = order;
     return this;
   }
@@ -45,11 +45,11 @@ public class RecurringOrder {
 
   @Valid
 
-  public Order getOrder() {
+  public OneTimeOrder getOrder() {
     return order;
   }
 
-  public void setOrder(Order order) {
+  public void setOrder(OneTimeOrder order) {
     this.order = order;
   }
 
@@ -123,14 +123,110 @@ public class RecurringOrder {
     return sb.toString();
   }
 
+  @Override
+  public Order id(UUID id) {
+    return order.id(id);
+  }
+
+  @Override
+  public UUID getId() {
+    return order.getId();
+  }
+
+  @Override
+  public void setId(UUID id) {
+    order.setId(id);
+  }
+
+  @Override
+  public Order currency(OneTimeOrder.CurrencyEnum currency) {
+    return order.currency(currency);
+  }
+
+  @Override
+  public OneTimeOrder.CurrencyEnum getCurrency() {
+    return order.getCurrency();
+  }
+
+  @Override
+  public void setCurrency(OneTimeOrder.CurrencyEnum currency) {
+    order.setCurrency(currency);
+  }
+
+  @Override
+  public Order quantity(Double quantity) {
+    return order.quantity(quantity);
+  }
+
+  @Override
+  public double getQuantity() {
+    return order.getQuantity();
+  }
+
+  @Override
+  public void setQuantity(Double quantity) {
+    order.setQuantity(quantity);
+  }
+
+  @Override
+  public Order destination(String destination) {
+    return order.destination(destination);
+  }
+
+  @Override
+  public String getDestination() {
+    return order.getDestination();
+  }
+
+  @Override
+  public void setDestination(String destination) {
+    order.setDestination(destination);
+  }
+
+  @Override
+  public Order destinationType(OneTimeOrder.DestinationTypeEnum destinationType) {
+    return order.destinationType(destinationType);
+  }
+
+  @Override
+  public OneTimeOrder.DestinationTypeEnum getDestinationType() {
+    return order.getDestinationType();
+  }
+
+  @Override
+  public void setDestinationType(OneTimeOrder.DestinationTypeEnum destinationType) {
+    order.setDestinationType(destinationType);
+  }
+
+  @Override
+  public Order filled(Boolean filled) {
+    return order.filled(filled);
+  }
+
+  @Override
+  public boolean isFilled() {
+    return order.isFilled();
+  }
+
+  @Override
+  public void setFilled(Boolean filled) {
+    order.setFilled(filled);
+  }
+
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(java.lang.Object o) {
+  @Override
+  public String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
+  }
+
+  @Override
+  public boolean isRecurring() {
+    return true;
   }
 }
 
