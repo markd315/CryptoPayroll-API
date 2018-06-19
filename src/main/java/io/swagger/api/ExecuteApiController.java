@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import com.coinbase.exchange.api.accounts.Account;
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.marketdata.MarketData;
@@ -154,9 +155,15 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private double queryAccountBalance() {
-    //TODO
+    List<Account> accs = accountService.getAccounts();
+    double usdAccountBalance = 0.0;
+    for (Account acc : accs) { //Find the USD account.
+      if (acc.getCurrency().equalsIgnoreCase("USD")) {
+        usdAccountBalance += acc.getBalance().doubleValue();
+      }
+    }
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
-    return 0.0;
+    return usdAccountBalance;
   }
 
   private void payAmountToWallet(double toPay, String address, OneTimeOrder.CurrencyEnum currency, OneTimeOrder.DestinationTypeEnum destinationType) {
