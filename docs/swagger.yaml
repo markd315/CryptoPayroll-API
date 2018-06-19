@@ -7,7 +7,7 @@ info:
         email: mark_davis@ultimatesoftware.com
     license:
         name: 'All rights reserved by Mark Davis except where overridden by the rights of Ultimate Software'
-host: nu-edge-server-ponderable-veteran.apps.mia.ulti.io
+host: localhost:8080
 basePath: /v2
 tags:
     -
