@@ -3,6 +3,20 @@ console.log("hello")
 const host = "http://localhost:8080/v2/";
 var user_order_ids = [];
 
+$.postJSON = function(url, data, callback) {
+    return jQuery.ajax({
+    headers: { 
+        'Accept': 'application/json',
+        'Content-Type': 'application/json' 
+    },
+    'type': 'POST',
+    'url': url,
+    'data': JSON.stringify(data),
+    'dataType': 'json',
+    'success': callback
+    });
+};
+
 function createRecurringOrder(data) {
     var recurringOrder = {
         order: data.order,
@@ -10,7 +24,7 @@ function createRecurringOrder(data) {
         cyclesSinceLast: data.cyclesSinceLast
     }
     url = host + "recurring/"
-    $.post("url", recurringOrder, function(res, status){
+    $.postJSON(url, recurringOrder, function(res, status){
         alert("Response: " + res + "\nStatus: " + status);
     })
 }
@@ -28,7 +42,7 @@ function getNumberUserCurrencies() {
 
 // BTC, ETH, LTC
 function submitForm() {
-    var cbOrders = [];
+    var orders = [];
     var btcOrder;
     var selectedBTC = false;
     var selectedETH = false;
@@ -49,7 +63,7 @@ function submitForm() {
                 destination: dest,
                 destinationType: "coinbase"
             };
-            cbOrders.push(order)
+            orders.push(order)
         }
         if ($("#cb-eth-chk").is(":checked")) {
             selectedETH = true;
@@ -61,7 +75,7 @@ function submitForm() {
                 destination: dest,
                 destinationType: "coinbase"
             };
-            cbOrders.push(order)
+            orders.push(order)
         };
         if ($("#cb-ltc-chk").is(":checked")) {
             selectedLTC = true;
@@ -73,7 +87,7 @@ function submitForm() {
                 destination: dest,
                 destinationType: "coinbase"
             };
-            cbOrders.push(order)
+            orders.push(order)
         };
     }
     else if ($("#bitcoin-wallet-radio").is(":checked") && $("#bitcoin-wallet-id-input").val()) {
@@ -84,9 +98,19 @@ function submitForm() {
             destination: dest,
             destinationType: "wallet"
         }
+        orders.push(btcOrder);
     } else return null;
 
-    $("#")
+    for (var i = 0; i < orders.length; i++) {
+        var recurringOrder = {
+            order: orders[i],
+            cyclePeriod: cyclePeriod,
+            cyclesSinceLast: cyclesSinceLast
+        }
+        console.log(recurringOrder);
+        createRecurringOrder(recurringOrder);
+        
+    }
 
 }
 
