@@ -5,7 +5,7 @@ import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.payments.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
-import io.swagger.services.OrderService;
+import io.swagger.services.UltiOrderService;
 import java.math.BigDecimal;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -28,11 +28,11 @@ public class ExecuteApiController implements ExecuteApi {
   private final HttpServletRequest request;
 
   @Autowired
-  private final OrderService service;
+  private final UltiOrderService service;
 
 
   @org.springframework.beans.factory.annotation.Autowired
-  public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, OrderService service) {
+  public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
     this.objectMapper = objectMapper;
     this.request = request;
     this.service = service;

@@ -19,6 +19,7 @@ public class PaymentService {
   GdaxExchange gdaxExchange;
 
   public List<PaymentType> getPaymentTypes() {
+    System.out.println(gdaxExchange);
     return gdaxExchange.getAsList(PAYMENT_METHODS_ENDPOINT, new ParameterizedTypeReference<PaymentType[]>() {
     });
   }

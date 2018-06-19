@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrderService {
+public class UltiOrderService {
   private final OrderRepo orderRepository;
   private final RecurringRepo recurringRepository;
 
   @Autowired
-  public OrderService(OrderRepo orderRepository, RecurringRepo recurringRepository) {
+  public UltiOrderService(OrderRepo orderRepository, RecurringRepo recurringRepository) {
     this.orderRepository = orderRepository;
     this.recurringRepository = recurringRepository;
   }
