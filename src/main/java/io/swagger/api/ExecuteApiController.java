@@ -2,16 +2,22 @@ package io.swagger.api;
 
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
+import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
+import com.coinbase.exchange.api.entity.NewOrderSingle;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
 import com.coinbase.exchange.api.marketdata.OrderItem;
+import com.coinbase.exchange.api.orders.OrderService;
 import com.coinbase.exchange.api.payments.PaymentService;
+import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -47,6 +53,12 @@ public class ExecuteApiController implements ExecuteApi {
   private DepositService depositService;
   @Autowired
   private MarketDataService marketDataService;
+  @Autowired
+  private OrderService orderService;
+  @Autowired
+  private WithdrawalsService withdrawalsService;
+
+  private List<NewOrderSingle> ourOpenOrders = new ArrayList<NewOrderSingle>();
 
   @Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
@@ -84,7 +96,7 @@ public class ExecuteApiController implements ExecuteApi {
     double usdWeOwn = queryAccountBalance();
 
     double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
-    placeUSDOrder(toPurchaseForCycle);
+    placeUSDDespoit(toPurchaseForCycle);
 
     //account loaded with cash
     double[]
@@ -161,14 +173,23 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Bank->USD
-  private void placeUSDOrder(double toPurchaseForCycle) {
+  private void placeUSDDespoit(double toPurchaseForCycle) {
     //TODO
   }
 
   //USD->Crypto
   private void placeOrderForUsdAmount(double toPurchaseForCycle, Order.CurrencyEnum currencyEnum) {
     //TODO
-
+    double cryptoQuote = gdaxAskForPrice(currencyEnum);
+    BigDecimal price = new BigDecimal(cryptoQuote);
+    price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
+    BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
+    BigDecimal sizeBTC = toPayUSD.divide(price);
+    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE);//Post_only
+    orderService.createOrder(ourOrder);
+    ourOpenOrders.add(ourOrder); //TODO do we really need this?
+    //Use NewLimitOrderSingle
+    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
     //Make sure that we only make one request per call, or that we use Thread.sleep(334) between calls.
   }
@@ -180,17 +201,23 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private void payAmountToWallet(double toPay, String address, OneTimeOrder.CurrencyEnum currency, OneTimeOrder.DestinationTypeEnum destinationType) {
-    //TODO
-    double cryptoQuote = gdaxAskForPrice(currency);
-    //Use NewLimitOrderSingle
-    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
+    if (destinationType == Order.DestinationTypeEnum.WALLET) {
+      withdrawalsService.makeWithdrawalToCryptoAccount(new BigDecimal(toPay), currency.toString(), address);
+    } else if (destinationType == Order.DestinationTypeEnum.COINBASE) {
+      withdrawalsService.makeWithdrawalToCoinbase(new BigDecimal(toPay), currency.toString(), address);
+    }
   }
 
   private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
     //Use MarketDataService highest BID.
     MarketData data = marketDataService.getMarketDataOrderBook(currency.toString(), "1");
     List<OrderItem> bids = data.getBids();
-    OrderItem bid = bids.get(0);
-    return bid.getPrice().doubleValue();
+    OrderItem highestBid = null;
+    for (OrderItem bid : bids) {
+      if (highestBid == null | bid.getPrice().doubleValue() > highestBid.getPrice().doubleValue()) {
+        highestBid = bid;
+      }
+    }
+    return highestBid.getPrice().doubleValue();
   }
 }
