@@ -30,7 +30,9 @@ public class Order {
 
     ETH("ETH"),
 
-    LTC("LTC");
+    LTC("LTC"),
+
+    USD("USD");
 
     private String value;
 
