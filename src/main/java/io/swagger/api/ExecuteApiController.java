@@ -20,8 +20,6 @@ import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
-
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,9 +73,8 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   public ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws InsufficientResourcesException {
+      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception {
     List<Order> ordersToFill = new ArrayList();
-    ourOrderIsUnfilled();
     try {
       ordersToFill.addAll(service.getAllOneTimeOrders());
     } catch (Exception e1) {
@@ -121,14 +118,14 @@ public class ExecuteApiController implements ExecuteApi {
     for (Order order : ordersToFill) {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
     }
-
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
-  private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) {
+  private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) throws Exception {
     placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
     double amountOrderFilledFor = Double.MAX_VALUE;
-    while (toPurchaseForCycle > 0) {
+    while (toPurchaseForCycle > 10) { //TODO reconsider this constant 10. But with 0, if we get very-nearly-complete
+      //TODO fills we might have a tiny amount remaining to buy and our small buys will be REJECTED by GDAX. This is a workaround.
       try {
         Thread.sleep(334);//Strictest rate limit is 3 per second
       } catch (InterruptedException e) {
@@ -140,9 +137,28 @@ public class ExecuteApiController implements ExecuteApi {
     }
   }
 
-  private double cancelOrderForUsdReturnAmountAlreadySpent() {
-    //TODO
-    return 0.0;
+  //Not concurrently safe to be used for multiple open orders.
+  private double cancelOrderForUsdReturnAmountAlreadySpent() throws Exception {
+    try {
+      Thread.sleep(334);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    List<com.coinbase.exchange.api.orders.Order> openOrders = orderService.getOpenOrders();
+    if (openOrders.size() > 1) {
+      throw new Exception("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
+    }
+    com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
+    double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
+    orderService.cancelOrder(order.getId());
+    /*for (com.coinbase.exchange.api.orders.Order order : openOrders) {
+      filledAmount += order.getFilled_size()/order.getSize();
+    }*/
+
+    //We don't want to do the above because we would need to distinguish between which cryptocurrency orders we are looking at.
+    //For now, constrain to one order.
+
+    return filledAmount;
   }
 
   private boolean ourOrderIsUnfilled() {
@@ -158,6 +174,8 @@ public class ExecuteApiController implements ExecuteApi {
     return true;
   }
 
+  //TODO Wire transfers are slow. Unless we're going to hold crypto,
+  //TODO we might need to break this into two seperate execution stages over several hours/days, one for loading USD and another for paying out.
   //Bank->USD
   private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
     if (toPurchaseForCycle <= 0) return;
