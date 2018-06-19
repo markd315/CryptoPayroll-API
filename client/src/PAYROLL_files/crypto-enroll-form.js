@@ -1,3 +1,14 @@
+$(document).ready(function(){
+    
+    
+});
+
+function getTest() {
+    $.get("demo_test.asp", function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    })
+}
+
 function onRadioSelect(obj) {
     var btc_id = "bitcoin-wallet-radio"
     var coinb_id = "coinbase-acc-radio"
@@ -8,7 +19,6 @@ function onRadioSelect(obj) {
         document.getElementById("coinbase-coin-choices").style.opacity = '0';
         document.getElementById("coinbase-acc-id-input").disabled = true;
         document.getElementById("coinbase-acc-id-input").value = "";
-        console.log("aa")
     } 
     else if (obj.id===coinb_id) {
         document.getElementById("coinbase-acc-id-input").disabled = false;
@@ -17,8 +27,5 @@ function onRadioSelect(obj) {
         document.getElementById("coinbase-coin-choices").style.opacity = '1';
         document.getElementById("bitcoin-wallet-id-input").disabled = true;
         document.getElementById("bitcoin-wallet-id-input").value = "";
-        console.log("bb")
     }
-    console.log("hello");
 }
-
