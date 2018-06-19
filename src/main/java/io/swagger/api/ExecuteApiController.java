@@ -99,7 +99,7 @@ public class ExecuteApiController implements ExecuteApi {
     }
 
     //Order for money to buy the crypto is filled, just nest for all cryptocurrencies, checking for 0.
-    List<Order> ordersToFill = oneTime;
+    List<OneTimeOrder> ordersToFill = oneTime;
 
     for (Order order : ordersToFill) {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
