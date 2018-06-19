@@ -49,12 +49,15 @@ public class RecurringApiController implements RecurringApi {
       if (body == null) {
         throw new NullPointerException("Request body cannot be null");
       }
-      service.addRecurringOrder(body);
 
-      //cyclePeriod should be set by the user and adding recurring order should not affact the period
-      toReturn = service.findRecurringOrderById(body.getId());
+      // Check valid currency
       if (body.getCurrency() == Order.CurrencyEnum.USD)
         return ResponseEntity.badRequest().build();
+
+      //cyclePeriod should be set by the user and adding recurring order should not affact the period
+
+      service.addRecurringOrder(body);
+      toReturn = service.findRecurringOrderById(body.getId()); // retrieve stored entry to respond with real UUID
 
     } catch (Exception e) {
       e.printStackTrace();
