@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.BooleanOperators;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,14 +61,11 @@ public class UltiOrderService {
   }
 
   public void addRecurringOrder(RecurringOrder body) {
-    try {
       RecurringOrder order = recurringRepository.findById(body.getId());
       if (order == null) {
-        throw new NotFoundException(404, "No such order");
+        recurringRepository.delete(order.getId());
       }
-    } catch (Exception e1) {
       recurringRepository.save(body);
-    }
   }
 
   public void deleteRecurringOrder(UUID id) throws NotFoundException {
@@ -139,5 +137,11 @@ public class UltiOrderService {
         }
       }
     }
+  }
+  public void updateRecurringOrder(RecurringOrder body) throws NotFoundException {
+      if (recurringRepository.findById(body.getId()) == null) {
+        throw new NotFoundException(404, "No Such Order");
+      }
+      recurringRepository.save(body);
   }
 }
