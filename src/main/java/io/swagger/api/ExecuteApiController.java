@@ -9,6 +9,7 @@ import com.coinbase.exchange.api.marketdata.MarketDataService;
 import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.orders.OrderService;
 import com.coinbase.exchange.api.payments.PaymentService;
+import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import io.swagger.model.OneTimeOrder;
@@ -54,6 +55,8 @@ public class ExecuteApiController implements ExecuteApi {
   private MarketDataService marketDataService;
   @Autowired
   private OrderService orderService;
+  @Autowired
+  private WithdrawalsService withdrawalsService;
 
   private List<NewOrderSingle> ourOpenOrders = new ArrayList<NewOrderSingle>();
 
@@ -198,8 +201,11 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private void payAmountToWallet(double toPay, String address, OneTimeOrder.CurrencyEnum currency, OneTimeOrder.DestinationTypeEnum destinationType) {
-    //TODO
-
+    if (destinationType == Order.DestinationTypeEnum.WALLET) {
+      withdrawalsService.makeWithdrawalToCryptoAccount(new BigDecimal(toPay), currency.toString(), address);
+    } else if (destinationType == Order.DestinationTypeEnum.COINBASE) {
+      withdrawalsService.makeWithdrawalToCoinbase(new BigDecimal(toPay), currency.toString(), address);
+    }
   }
 
   private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
