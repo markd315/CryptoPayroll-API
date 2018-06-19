@@ -2,6 +2,9 @@ package io.swagger.api;
 
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
+import com.coinbase.exchange.api.marketdata.MarketData;
+import com.coinbase.exchange.api.marketdata.MarketDataService;
+import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.payments.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
@@ -41,6 +44,8 @@ public class ExecuteApiController implements ExecuteApi {
   private PaymentService paymentService;
   @Autowired
   private DepositService depositService;
+  @Autowired
+  private MarketDataService marketDataService;
 
   @Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
@@ -155,6 +160,16 @@ public class ExecuteApiController implements ExecuteApi {
 
   private void payAmountToWallet(double toPay, String address, Order.CurrencyEnum currency, Order.DestinationTypeEnum destinationType) {
     //TODO
+    double cryptoQuote = gdaxAskForPrice(currency);
+    //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
+  }
+
+  private double gdaxAskForPrice(Order.CurrencyEnum currency) {
+    //Use MarketDataService highest BID.
+    MarketData data = marketDataService.getMarketDataOrderBook(currency.toString(), "1");
+    List<OrderItem> bids = data.getBids();
+    OrderItem bid = bids.get(0);
+    return bid.getPrice().doubleValue();
   }
 }
