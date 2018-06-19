@@ -39,7 +39,6 @@ public class OrderService {
       }
     } catch (Exception e1) {
       orderRepository.save(body);
-    }
   }
 
   public List<OneTimeOrder> getAllOneTimeOrders() throws NotFoundException {
