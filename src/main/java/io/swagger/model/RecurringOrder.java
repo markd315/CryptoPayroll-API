@@ -31,6 +31,12 @@ public class RecurringOrder implements Order {
   @Id
   private UUID id = null;
 
+  @JsonProperty("currency")
+  private CurrencyEnum currency = null;
+
+  @JsonProperty("destinationType")
+  private DestinationTypeEnum destinationType = null;
+
   public RecurringOrder order(OneTimeOrder order) {
     this.order = order;
     return this;
@@ -139,17 +145,17 @@ public class RecurringOrder implements Order {
   }
 
   @Override
-  public Order currency(OneTimeOrder.CurrencyEnum currency) {
+  public Order currency(CurrencyEnum currency) {
     return order.currency(currency);
   }
 
   @Override
-  public OneTimeOrder.CurrencyEnum getCurrency() {
+  public CurrencyEnum getCurrency() {
     return order.getCurrency();
   }
 
   @Override
-  public void setCurrency(OneTimeOrder.CurrencyEnum currency) {
+  public void setCurrency(CurrencyEnum currency) {
     order.setCurrency(currency);
   }
 
@@ -184,17 +190,17 @@ public class RecurringOrder implements Order {
   }
 
   @Override
-  public Order destinationType(OneTimeOrder.DestinationTypeEnum destinationType) {
+  public Order destinationType(Order.DestinationTypeEnum destinationType) {
     return order.destinationType(destinationType);
   }
 
   @Override
-  public OneTimeOrder.DestinationTypeEnum getDestinationType() {
+  public Order.DestinationTypeEnum getDestinationType() {
     return order.getDestinationType();
   }
 
   @Override
-  public void setDestinationType(OneTimeOrder.DestinationTypeEnum destinationType) {
+  public void setDestinationType(Order.DestinationTypeEnum destinationType) {
     order.setDestinationType(destinationType);
   }
 

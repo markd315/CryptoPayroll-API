@@ -1,8 +1,6 @@
 package io.swagger.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 import java.util.UUID;
@@ -22,78 +20,14 @@ public class OneTimeOrder implements Order {
   @Id
   private UUID id = null;
 
-  /**
-   * Three-digit trade code
-   */
-  public enum CurrencyEnum {
-    BTC("BTC"),
-
-    ETH("ETH"),
-
-    LTC("LTC");
-
-    private String value;
-
-    CurrencyEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CurrencyEnum fromValue(String text) {
-      for (CurrencyEnum b : CurrencyEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
-  @JsonProperty("currency")
-  private CurrencyEnum currency = null;
-
   @JsonProperty("quantity")
   private Double quantity = null;
 
   @JsonProperty("destination")
   private String destination = null;
 
-  /**
-   * Gets or Sets destinationType
-   */
-  public enum DestinationTypeEnum {
-    COINBASE("coinbase"),
-
-    WALLET("wallet");
-
-    private String value;
-
-    DestinationTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static DestinationTypeEnum fromValue(String text) {
-      for (DestinationTypeEnum b : DestinationTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
+  @JsonProperty("currency")
+  private CurrencyEnum currency = null;
 
   @JsonProperty("destinationType")
   private DestinationTypeEnum destinationType = null;
