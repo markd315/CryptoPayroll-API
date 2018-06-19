@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
 @Api(value = "queue", description = "the queue API")
@@ -25,6 +27,6 @@ public interface QueueApi {
   @RequestMapping(value = "/queue",
       produces = {"application/json"},
       method = RequestMethod.GET)
-  ResponseEntity<Void> returnOrders();
+  ResponseEntity<List<Object>> returnOrders();
 
 }
