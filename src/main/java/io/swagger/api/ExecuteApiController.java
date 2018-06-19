@@ -93,7 +93,7 @@ public class ExecuteApiController implements ExecuteApi {
     double usdWeOwn = queryAccountBalance();
 
     double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
-    placeUSDOrder(toPurchaseForCycle);
+    placeUSDDespoit(toPurchaseForCycle);
 
     //account loaded with cash
     double[]
@@ -170,17 +170,17 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Bank->USD
-  private void placeUSDOrder(double toPurchaseForCycle) {
+  private void placeUSDDespoit(double toPurchaseForCycle) {
     //TODO
   }
 
   //USD->Crypto
   private void placeOrderForUsdAmount(double toPurchaseForCycle, Order.CurrencyEnum currencyEnum) {
     //TODO
-    double cryptoQuote = gdaxAskForPrice(currency);
+    double cryptoQuote = gdaxAskForPrice(currencyEnum);
     BigDecimal price = new BigDecimal(cryptoQuote);
     price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
-    BigDecimal toPayUSD = new BigDecimal(toPay);
+    BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
     BigDecimal sizeBTC = toPayUSD.divide(price);
     NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE);//Post_only
     orderService.createOrder(ourOrder);
@@ -206,9 +206,12 @@ public class ExecuteApiController implements ExecuteApi {
     //Use MarketDataService highest BID.
     MarketData data = marketDataService.getMarketDataOrderBook(currency.toString(), "1");
     List<OrderItem> bids = data.getBids();
+    OrderItem highestBid = null;
     for (OrderItem bid : bids) {
-      OrderItem bid = bids.get(0);
+      if (highestBid == null | bid.getPrice().doubleValue() > highestBid.getPrice().doubleValue()) {
+        highestBid = bid;
+      }
     }
-    return bid.getPrice().doubleValue();
+    return highestBid.getPrice().doubleValue();
   }
 }
