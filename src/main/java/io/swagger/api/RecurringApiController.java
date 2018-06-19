@@ -67,7 +67,14 @@ public class RecurringApiController implements RecurringApi {
       @ApiParam(value = "The recurring order to remove", required = true) @PathVariable("target") String target,
       @ApiParam(value = "The currency to remove (USD: all)", allowableValues = "USD, BTC, ETH, LTC") @RequestHeader(value = "code", required = false) String code) {
     String accept = request.getHeader("Accept");
-    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+
+    try {
+      service.deleteRecurringOrder(UUID.fromString(target));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
   public ResponseEntity<RecurringOrder> retrieveRecurring(
