@@ -1,12 +1,101 @@
-$(document).ready(function(){
-    
-    
-});
+console.log("hello")
 
-function getTest() {
-    $.get("demo_test.asp", function(data, status){
-        alert("Data: " + data + "\nStatus: " + status);
+const host = "http://localhost:8080/v2/";
+var user_order_ids = [];
+
+function createRecurringOrder(data) {
+    var recurringOrder = {
+        order: data.order,
+        cyclePeriod: data.cyclePeriod,
+        cyclesSinceLast: data.cyclesSinceLast
+    }
+    url = host + "recurring/"
+    $.post("url", recurringOrder, function(res, status){
+        alert("Response: " + res + "\nStatus: " + status);
     })
+}
+
+function getNumberUserCurrencies() {
+    var num = 0;
+    if ($("#coinbase-acc-radio").is(":checked") && $("#coinbase-acc-id-input").val()) {
+        if ($("#cb-btc-chk").is(":checked")) num++;
+        if ($("#cb-eth-chk").is(":checked")) num++;
+        if ($("#cb-ltc-chk").is(":checked")) num++;
+        return num;
+    } 
+    return null;
+}
+
+// BTC, ETH, LTC
+function submitForm() {
+    var cbOrders = [];
+    var btcOrder;
+    var selectedBTC = false;
+    var selectedETH = false;
+    var selectedLTC = false;
+    var dollarPerPaycheck = $("#per-paycheck-amt").val();
+    var cyclePeriod = 1;
+    var cyclesSinceLast = 0;
+
+    if ($("#coinbase-acc-radio").is(":checked") && $("#coinbase-acc-id-input").val()) {
+        var dest = $("#coinbase-acc-id-input").val();
+        if ($("#cb-btc-chk").is(":checked")){ 
+            selectedBTC = true;
+            var percentage = $("#cb-btc-percentage").val() / 100.0;
+            var amount = percentage * dollarPerPaycheck;
+            var order = {
+                currency: "BTC",
+                quantity: amount,
+                destination: dest,
+                destinationType: "coinbase"
+            };
+            cbOrders.push(order)
+        }
+        if ($("#cb-eth-chk").is(":checked")) {
+            selectedETH = true;
+            var percentage = $("#cb-eth-percentage").val() / 100.0;
+            var amount = percentage * dollarPerPaycheck;
+            var order = {
+                currency: "ETH",
+                quantity: amount,
+                destination: dest,
+                destinationType: "coinbase"
+            };
+            cbOrders.push(order)
+        };
+        if ($("#cb-ltc-chk").is(":checked")) {
+            selectedLTC = true;
+            var percentage = $("#cb-ltc-percentage").val() / 100.0;
+            var amount = percentage * dollarPerPaycheck;
+            var order = {
+                currency: "LTC",
+                quantity: amount,
+                destination: dest,
+                destinationType: "coinbase"
+            };
+            cbOrders.push(order)
+        };
+    }
+    else if ($("#bitcoin-wallet-radio").is(":checked") && $("#bitcoin-wallet-id-input").val()) {
+        var dest = $("#bitcoin-wallet-id-input").val();
+        btcOrder = {
+            currency: "BTC",
+            quantity: dollarPerPaycheck,
+            destination: dest,
+            destinationType: "wallet"
+        }
+    } else return null;
+
+    $("#")
+
+}
+
+function getRecurringOrder() {
+
+}
+
+function getOrder() {
+
 }
 
 function onRadioSelect(obj) {
