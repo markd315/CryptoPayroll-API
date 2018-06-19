@@ -110,8 +110,6 @@ public class OneTimeOrder implements Order {
   @Override
   @ApiModelProperty(value = "Overwritten by server")
 
-  @Valid
-
   public UUID getId() {
     return id;
   }
