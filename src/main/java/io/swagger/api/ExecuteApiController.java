@@ -2,12 +2,13 @@ package io.swagger.api;
 
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
-import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.payments.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.Order;
+import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
-import java.math.BigDecimal;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,16 @@ public class ExecuteApiController implements ExecuteApi {
 
   private static final Logger log = LoggerFactory.getLogger(ExecuteApiController.class);
 
-  private final ObjectMapper objectMapper;
+  private ObjectMapper objectMapper;
 
-  private final HttpServletRequest request;
+  private HttpServletRequest request;
 
   @Autowired
-  private final UltiOrderService service;
+  private UltiOrderService service;
+  @Autowired
+  private BalanceApi balanceApiController;
+  @Autowired
+  private QueueApi queueApiController;
   @Autowired
   private AccountService accountService;
   @Autowired
@@ -47,25 +52,54 @@ public class ExecuteApiController implements ExecuteApi {
 
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
-    /*List<Order> oneTime;
+    List<Order> oneTime = null;
     try {
       oneTime = service.getAllOneTimeOrders();
     } catch (Exception e1) {
       e1.printStackTrace();
     }
-    List<RecurringOrder> toReturn = null;
+    List<RecurringOrder> toExtractSingle = null;
     try {
-      toReturn = service.getAllRecurringOrders();
+      toExtractSingle = service.getAllRecurringOrders();
     } catch (Exception e1) {
       e1.printStackTrace();
-    }*/
-    double usdToPurchase = 332.12;
-    System.out.println(paymentService.getPaymentTypes().size() + " Payment types available");
-    System.out.println(paymentService.getPaymentTypes().get(0).toString());
-    String paymentTypeId = paymentService.getPaymentTypes().get(0).getId();
-    PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", paymentTypeId);
+    }
+    for (RecurringOrder recurring : toExtractSingle) {
+      oneTime.add(recurring.getOrder());
+    }
+
+    double amountWeOwePayees = balanceApiController.calculateOwed("USD").getBody();
+
+    double usdWeOwn = queryAccountBalance();
+
+    double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
+    //account loaded with cash
+    placeOrderForUsd(toPurchaseForCycle);
+    double amountOrderFilledFor = Double.MAX_VALUE;
+    while (toPurchaseForCycle > 0) {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+      toPurchaseForCycle -= amountOrderFilledFor;
+      placeOrderForUsd(toPurchaseForCycle);
+    }
+    //Order for crypto is filled, just nest for all cryptocurrencies, checking for 0.
+
+    ResponseEntity<List<Object>> ordersResponse = queueApiController.returnOrders();
+    List<Object> ordersToFill = ordersResponse.getBody();
+    for (Object orderObject : ordersToFill) {
+      Order order = (Order) orderObject;
+      payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
+    }
+    incrementOrResetAllRecurringPayments();
+
+    //access services like this!
+    //String paymentTypeId = paymentService.getPaymentTypes().get(0).getId();
+    //PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", paymentTypeId);
     //TODO npe next line
-    System.out.println(res.toString());
 
     //TODO a bunch of summation logic, then a bunch of API hits, as shown.
     //TODO after we successfully order each type of the crypto, release it to its owners.
@@ -91,7 +125,33 @@ public class ExecuteApiController implements ExecuteApi {
       e.printStackTrace();
     }
     */
-    return new ResponseEntity<Void>(/*(MultiValueMap<String, String>) toReturn,*/
-        HttpStatus.OK);
+    return new ResponseEntity<Void>(HttpStatus.OK);
+  }
+
+  private double cancelOrderForUsdReturnAmountAlreadySpent() {
+    //TODO
+    return 0.0;
+  }
+
+  private boolean ourOrderIsUnfilled() {
+    //TODO
+    return true;
+  }
+
+  private void placeOrderForUsd(double toPurchaseForCycle) {
+    //TODO
+  }
+
+  private double queryAccountBalance() {
+    //TODO
+    return 0.0;
+  }
+
+  private void payAmountToWallet(double toPay, String address, Order.CurrencyEnum currency, Order.DestinationTypeEnum destinationType) {
+    //TODO
+  }
+
+  private void incrementOrResetAllRecurringPayments() {
+    //TODO
   }
 }

@@ -1,6 +1,7 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,9 @@ public class QueueApiController implements QueueApi {
     this.request = request;
   }
 
-  public ResponseEntity<Void> returnOrders() {
+  public ResponseEntity<List<Object>> returnOrders() {
     String accept = request.getHeader("Accept");
-    return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+    return new ResponseEntity<List<Object>>(HttpStatus.NOT_IMPLEMENTED);
   }
 
 }

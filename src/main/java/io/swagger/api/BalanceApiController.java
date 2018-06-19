@@ -28,10 +28,10 @@ public class BalanceApiController implements BalanceApi {
     this.request = request;
   }
 
-  public ResponseEntity<Void> calculateOwed(
+  public ResponseEntity<Double> calculateOwed(
       @ApiParam(value = "Three character currency code", required = true, allowableValues = "USD, BTC, LTC, ETH") @RequestHeader(value = "currency", required = true) String currency) {
     String accept = request.getHeader("Accept");
-    return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+    return new ResponseEntity<Double>(HttpStatus.NOT_IMPLEMENTED);
   }
 
 }
