@@ -1,7 +1,6 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.services.OrderService;
 import io.swagger.services.UltiOrderService;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class QueueApiController implements QueueApi {
   private final UltiOrderService orderService;
 
   @Autowired
-  public QueueApiController(ObjectMapper objectMapper, HttpServletRequest request, OrderService orderService) {
+  public QueueApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService orderService) {
     this.objectMapper = objectMapper;
     this.request = request;
     this.orderService = orderService;

@@ -40,12 +40,17 @@ public class UltiOrderService {
       }
     } catch (Exception e1) {
       orderRepository.save(body);
+    }
   }
 
   public List<OneTimeOrder> getAllOneTimeOrders() throws NotFoundException {
     List<OneTimeOrder> orders = orderRepository.findAll();
     if (orders == null) {
-      throw new NotFoundException(404, "No such orders");
+      try {
+        throw new NotFoundException(404, "No such orders");
+      } catch (NotFoundException e) {
+        e.printStackTrace();
+      }
     }
     return orders;
   }
@@ -53,7 +58,11 @@ public class UltiOrderService {
   public List<RecurringOrder> getAllRecurringOrders() throws NotFoundException {
     List<RecurringOrder> orders = recurringRepository.findAll();
     if (orders == null) {
-      throw new NotFoundException(404, "No such orders");
+      try {
+        throw new NotFoundException(404, "No such orders");
+      } catch (NotFoundException e) {
+        e.printStackTrace();
+      }
     }
     return orders;
   }
@@ -61,7 +70,11 @@ public class UltiOrderService {
   public void wipeAllOneTimeOrders() throws NotFoundException {
     List<OneTimeOrder> orders = orderRepository.findAll();
     if (orders == null || orders.size() == 0) {
-      throw new NotFoundException(404, "No such order");
+      try {
+        throw new NotFoundException(404, "No such order");
+      } catch (NotFoundException e) {
+        e.printStackTrace();
+      }
     }
     orderRepository.delete(orders);
   }
