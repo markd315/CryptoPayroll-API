@@ -48,23 +48,26 @@ public class BalanceApiController implements BalanceApi {
     }
 
     updatePrices();
-    double orderAmount = 0;
-    for (Order order : orderService.getAllOneTimeOrders()) {
-      orderAmount += getOrderAmount(requestedCurrency, order);
-    }
-
-    for (RecurringOrder order : orderService.getAllRecurringOrders()) {
-      orderAmount += getOrderAmount(requestedCurrency, order.getOrder());
-    }
-
-    final double orderAmt = orderAmount;
+    final double orderAmount = getTotalOrderAmount(requestedCurrency);
     return ResponseEntity.ok(new Object() {
       public Order.CurrencyEnum ticker = requestedCurrency;
-      public double qty = orderAmt;
+      public double qty = orderAmount;
     });
   }
 
-  private double getOrderAmount(Order.CurrencyEnum requestedCurrency, Order order) {
+  private double getTotalOrderAmount(Order.CurrencyEnum requestedCurrency) throws NotFoundException {
+    double orderAmount = 0;
+    for (Order order : orderService.getAllOneTimeOrders()) {
+      orderAmount += getOrderAmountForOrder(requestedCurrency, order);
+    }
+
+    for (RecurringOrder order : orderService.getAllRecurringOrders()) {
+      orderAmount += getOrderAmountForOrder(requestedCurrency, order.getOrder());
+    }
+    return orderAmount;
+  }
+
+  private double getOrderAmountForOrder(Order.CurrencyEnum requestedCurrency, Order order) {
     if (requestedCurrency == order.getCurrency()) {
       return order.getQuantity();
     } else if (requestedCurrency == USD) {
