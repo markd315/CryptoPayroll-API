@@ -9,8 +9,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.model.Order;
+import io.swagger.model.OneTimeOrder;
 import javax.validation.Valid;
+
+import io.swagger.model.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,6 @@ public interface BonusApi {
       produces = {"application/json"},
       consumes = {"application/json"},
       method = RequestMethod.POST)
-  ResponseEntity<Order> addBonus(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody Order body);
+  ResponseEntity<Order> addBonus(@ApiParam(value = "Update to recurring order", required = true) @Valid @RequestBody OneTimeOrder body);
 
 }
