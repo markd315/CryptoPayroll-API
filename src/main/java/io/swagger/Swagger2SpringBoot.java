@@ -9,7 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan(basePackages = {"io.swagger", "com.coinbase.exchange.api", "io.swagger.api", "io.swagger.repo", "io.swagger.services",
+@ComponentScan(basePackages = {"io.swagger", "com.coinbase.exchange.api.payments", "io.swagger.api", "io.swagger.repo", "io.swagger.services",
     "io.swagger.configuration"})
 public class Swagger2SpringBoot implements CommandLineRunner {
 
@@ -20,10 +20,7 @@ public class Swagger2SpringBoot implements CommandLineRunner {
     }
   }
 
-  public static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
-
   public static void main(String[] args) throws Exception {
-    System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(false)));
     new SpringApplication(Swagger2SpringBoot.class).run(args);
   }
 

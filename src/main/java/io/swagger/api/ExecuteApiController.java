@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.payments.PaymentService;
@@ -29,14 +30,20 @@ public class ExecuteApiController implements ExecuteApi {
 
   @Autowired
   private final UltiOrderService service;
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private PaymentService paymentService;
+  @Autowired
+  private DepositService depositService;
 
-
-  @org.springframework.beans.factory.annotation.Autowired
+  @Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
     this.objectMapper = objectMapper;
     this.request = request;
     this.service = service;
   }
+
 
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
@@ -53,10 +60,8 @@ public class ExecuteApiController implements ExecuteApi {
       e1.printStackTrace();
     }*/
     double usdToPurchase = 332.12;
-    DepositService depositer = new DepositService();
-    PaymentService paymentService = new PaymentService();
     System.out.println(paymentService.getPaymentTypes().get(0));
-    PaymentResponse res = depositer.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", "bc677162-d934-5f1a-968c-a496b1c1270b");
+    PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", "bc677162-d934-5f1a-968c-a496b1c1270b");
     System.out.println(res.toString());
 
     //TODO a bunch of summation logic, then a bunch of API hits, as shown.
