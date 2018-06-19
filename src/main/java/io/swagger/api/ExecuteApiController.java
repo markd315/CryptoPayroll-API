@@ -150,7 +150,7 @@ public class ExecuteApiController implements ExecuteApi {
       throw new Exception("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
     }
     com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
-    double filledAmount = order.getFilled_size() * order.getPrice();
+    double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
     /*for (com.coinbase.exchange.api.orders.Order order : openOrders) {
       filledAmount += order.getFilled_size()/order.getSize();
     }*/
