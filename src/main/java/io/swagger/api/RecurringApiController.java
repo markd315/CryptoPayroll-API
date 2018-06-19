@@ -2,12 +2,12 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
-import io.swagger.model.RecurringOrder;
 import io.swagger.model.Order;
+import io.swagger.model.RecurringOrder;
+import io.swagger.services.UltiOrderService;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import io.swagger.services.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-
-import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
@@ -32,10 +30,10 @@ public class RecurringApiController implements RecurringApi {
   private final HttpServletRequest request;
 
   @Autowired
-  private final OrderService service;
+  private final UltiOrderService service;
 
   @org.springframework.beans.factory.annotation.Autowired
-  public RecurringApiController(ObjectMapper objectMapper, HttpServletRequest request, OrderService orderService) {
+  public RecurringApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService orderService) {
     this.objectMapper = objectMapper;
     this.request = request;
     this.service = orderService;
@@ -44,7 +42,7 @@ public class RecurringApiController implements RecurringApi {
   public ResponseEntity<Void> addRecurring(@ApiParam(value = "New recurring order", required = true) @Valid @RequestBody RecurringOrder body) {
     String accept = request.getHeader("Accept");
     try {
-      if(body == null) {
+      if (body == null) {
         throw new NullPointerException("Request body cannot be null");
       }
       //cyclePeriod should be set by the user and adding recurring order should not affact the period

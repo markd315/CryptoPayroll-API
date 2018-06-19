@@ -35,7 +35,7 @@ paths:
     /balance:
         get:
             tags: [admin]
-            summary: 'Return the current commitment for this cryptocurrency, or the total USD commitment'
+            summary: 'Return the USD commitment for this cryptocurrency, or the total USD commitment (sum of three)'
             operationId: calculateOwed
             produces: [application/json]
             parameters: [{in: header, type: string, name: currency, enum: [USD, BTC, LTC, ETH], description: 'Three character currency code', required: true}]
@@ -136,7 +136,7 @@ definitions:
         properties:
             id: {type: string, format: uuid, description: 'Overwritten by server'}
             currency: {type: string, description: 'Three-digit trade code', enum: [BTC, ETH, LTC]}
-            quantity: {type: number, format: double, description: 'Amount of currency to send'}
+            quantity: {type: number, format: double, description: 'Amount of currency to purchase for client in USD.'}
             destination: {type: string}
             destinationType: {type: string, enum: [coinbase, wallet]}
             filled: {type: boolean, description: 'Overwritten by server'}
@@ -165,6 +165,3 @@ definitions:
 externalDocs:
     description: 'Find out more about Swagger'
     url: 'http://swagger.io'
-#test keys:
-#address: 1NDFFTXHYCPWTHmTVQy7FN7JahkYkdp1CM
-#private: L2qdLEUKtBKGHLT5S2wQdWyrffe28Rz9jCQYPxm44XDhsh1jsA66
