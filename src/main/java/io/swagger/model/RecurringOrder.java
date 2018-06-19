@@ -48,12 +48,6 @@ public class RecurringOrder implements Order{
   @JsonProperty("cyclesSinceLast")
   private Integer cyclesSinceLast = 0;
 
-//  public RecurringOrder order(OneTimeOrder order) {
-//    setOrder(order);
-//    recurring = true;
-//    return this;
-//  }
-
   /**
    * Get order
    * @return order
@@ -252,97 +246,6 @@ public class RecurringOrder implements Order{
   public void setFilled(Boolean filled) {
     this.filled = filled;
   }
-
-
-  /*//@Override
-  public Order id(UUID id) {
-    return supid(id);
-  }
-
-  //@Override
-  public UUID getId() {
-    return super.getId();
-  }
-
-  //@Override
-  public void setId(UUID id) {
-    super.setId(id);
-  }
-
-  //@Override
-  public Order currency(CurrencyEnum currency) {
-    return super.currency(currency);
-  }
-
-  //@Override
-  public CurrencyEnum getCurrency() {
-    return super.getCurrency();
-  }
-
-  //@Override
-  public void setCurrency(CurrencyEnum currency) {
-    super.setCurrency(currency);
-  }
-
-  //@Override
-  public Order quantity(Double quantity) {
-    return super.quantity(quantity);
-  }
-
-  //@Override
-  public double getQuantity() {
-    return super.getQuantity();
-  }
-
-  //@Override
-  public void setQuantity(Double quantity) {
-    super.setQuantity(quantity);
-  }
-
-  //@Override
-  public Order destination(String destination) {
-    return super.destination(destination);
-  }
-
-  //@Override
-  public String getDestination() {
-    return super.getDestination();
-  }
-
-  //@Override
-  public void setDestination(String destination) {
-    super.setDestination(destination);
-  }
-
-  //@Override
-  public Order destinationType(Order.DestinationTypeEnum destinationType) {
-    return super.destinationType(destinationType);
-  }
-
-  //@Override
-  public Order.DestinationTypeEnum getDestinationType() {
-    return getDestinationType();
-  }
-
-  //@Override
-  public void setDestinationType(Order.DestinationTypeEnum destinationType) {
-    setDestinationType(destinationType);
-  }
-
-  //@Override
-  public Order filled(Boolean filled) {
-    return super.filled(filled);
-  }
-
-  //@Override
-  public boolean isFilled() {
-    return isFilled();
-  }
-
-  //@Override
-  public void setFilled(Boolean filled) {
-    getOrder().setFilled(filled);
-  }*/
 
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
