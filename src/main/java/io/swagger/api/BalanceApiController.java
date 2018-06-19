@@ -71,8 +71,6 @@ public class BalanceApiController implements BalanceApi {
 
     private double getOrderAmountForOrder(Order.CurrencyEnum requestedCurrency, Order order) {
         if (requestedCurrency == order.getCurrency()) {
-            return price.getAmountOfCoinFor(order);
-        } else if (requestedCurrency == USD) {
             return order.getQuantity();
         }
 
