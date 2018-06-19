@@ -20,6 +20,8 @@ import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
+
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,18 +74,12 @@ public class ExecuteApiController implements ExecuteApi {
     this.service = service;
   }
 
-
   public ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true)
-      @RequestHeader(value = "code", required = true)
-          String code)
-      throws InsufficientResourcesException {
-    //TODO remove
-    placeUSDDespoit(32.21);
-
-    List<OneTimeOrder> oneTime = null;
+      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws InsufficientResourcesException {
+    List<Order> ordersToFill = new ArrayList();
+    ourOrderIsUnfilled();
     try {
-      oneTime = service.getAllOneTimeOrders();
+      ordersToFill.addAll(service.getAllOneTimeOrders());
     } catch (Exception e1) {
       e1.printStackTrace();
     }
@@ -96,7 +92,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     for (RecurringOrder recurring : toExtractSingle) {
       if (recurring.getCyclesSinceLast() + 1 == recurring.getCyclePeriod()) { //If we are executing payroll for this recurringOrder
-        oneTime.add(recurring.getOrder()); //add it to the ones we are executing.
+        ordersToFill.add(recurring); //add it to the ones we are executing.
       }
     }
 
@@ -112,7 +108,8 @@ public class ExecuteApiController implements ExecuteApi {
     //account loaded with cash
     double[]
         owed =
-        {balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.BTC), balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.ETH),
+        {balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.BTC),
+            balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.ETH),
             balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.LTC)};
     String[] currCodes = {Order.CurrencyEnum.BTC.toString(), Order.CurrencyEnum.ETH.toString(), Order.CurrencyEnum.LTC.toString()};
     for (int i = 0; i < 3; i++) {
@@ -120,7 +117,6 @@ public class ExecuteApiController implements ExecuteApi {
     }
 
     //Order for money to buy the crypto is filled, just nest for all cryptocurrencies, checking for 0.
-    List<OneTimeOrder> ordersToFill = oneTime;
 
     for (Order order : ordersToFill) {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
@@ -150,8 +146,15 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private boolean ourOrderIsUnfilled() {
-    //TODO
-    //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
+    try {
+      Thread.sleep(334);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    List<com.coinbase.exchange.api.orders.Order> openOrders = orderService.getOpenOrders();
+    if (openOrders.isEmpty()) {
+      return false;
+    }
     return true;
   }
 
@@ -233,3 +236,4 @@ public class ExecuteApiController implements ExecuteApi {
     return highestBid.getPrice().doubleValue();
   }
 }
+

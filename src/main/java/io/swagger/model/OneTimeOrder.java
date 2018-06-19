@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 import java.util.UUID;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
 public class OneTimeOrder implements Order {
+
   @JsonProperty("id")
   @Id
   private UUID id = null;
@@ -34,6 +34,9 @@ public class OneTimeOrder implements Order {
 
   @JsonProperty("filled")
   private Boolean filled = null;
+
+  @JsonProperty("recurring")
+  private Boolean recurring = false;
 
   @Override
   public Order id(UUID id) {
@@ -197,4 +200,5 @@ public class OneTimeOrder implements Order {
     return false;
   }
 }
+
 
