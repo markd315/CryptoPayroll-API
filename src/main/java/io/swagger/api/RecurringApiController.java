@@ -2,6 +2,7 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
@@ -52,6 +53,9 @@ public class RecurringApiController implements RecurringApi {
 
       //cyclePeriod should be set by the user and adding recurring order should not affact the period
       toReturn = service.findRecurringOrderById(body.getId());
+      if (body.getCurrency() == Order.CurrencyEnum.USD)
+        return ResponseEntity.badRequest().build();
+
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity<RecurringOrder>(toReturn, HttpStatus.BAD_REQUEST);
