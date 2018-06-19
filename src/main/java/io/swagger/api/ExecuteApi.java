@@ -29,6 +29,6 @@ public interface ExecuteApi {
       consumes = {"application/json"},
       method = RequestMethod.POST)
   ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code);
+      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception;
 
 }
