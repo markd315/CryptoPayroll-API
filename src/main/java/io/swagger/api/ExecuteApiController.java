@@ -17,8 +17,6 @@ import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
-
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,13 +70,7 @@ public class ExecuteApiController implements ExecuteApi {
 
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception {
-<<<<<<< HEAD
-    List<OneTimeOrder> oneTime = null;
-    System.out.println(cancelOrderForUsdReturnAmountAlreadySpent());
-=======
     List<Order> ordersToFill = new ArrayList();
-    ourOrderIsUnfilled();
->>>>>>> ecad82a62b9b57baa09ccab8adc3ec8a05df93f4
     try {
       ordersToFill.addAll(service.getAllOneTimeOrders());
     } catch (Exception e1) {
