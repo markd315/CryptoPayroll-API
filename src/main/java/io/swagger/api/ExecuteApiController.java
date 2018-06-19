@@ -172,8 +172,6 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private boolean ourOrderIsUnfilled() {
-
-    List<Account> accs = accountService.getAccounts();
     try {
       Thread.sleep(334);
     } catch (InterruptedException e) {
