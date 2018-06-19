@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import io.swagger.model.Order;
 import io.swagger.services.OrderService;
-import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -35,7 +34,7 @@ public class BonusApiController implements BonusApi {
   @Autowired
   private final OrderService service;
 
-  @org.springframework.beans.factory.annotation.Autowired
+  @Autowired
   public BonusApiController(ObjectMapper objectMapper, HttpServletRequest request, OrderService orderService) {
     this.objectMapper = objectMapper;
     this.request = request;

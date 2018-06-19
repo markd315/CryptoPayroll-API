@@ -4,25 +4,28 @@ apply plugin: 'idea'
 group = 'io.swagger'
 version = '1.0.0'
 
-description = """CrptoPayroll"""
+description = """CryptoPayroll"""
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+    options.encoding = 'UTF-8'
 }
 
 repositories {
-        
-     maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'1.5.9.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.10.9.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version:'1.5.9.RELEASE'
-    compile group: 'io.springfox', name: 'springfox-swagger2', version:'2.7.0'
-    compile group: 'io.springfox', name: 'springfox-swagger-ui', version:'2.7.0'
-    compile group: 'com.github.joschi.jackson', name: 'jackson-datatype-threetenbp', version:'2.6.4'
-    compile group: 'javax.validation', name: 'validation-api', version:'1.1.0.Final'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.5.9.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-mongodb', version: '1.10.9.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: '1.5.9.RELEASE'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+    compile 'org.json:json:20171018'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+    compile group: 'com.github.joschi.jackson', name: 'jackson-datatype-threetenbp', version: '2.6.4'
+    compile group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
+    testCompile 'junit:junit:4.12'
+    testCompile "org.mockito:mockito-core:1.+"
 }
