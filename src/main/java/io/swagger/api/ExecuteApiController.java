@@ -86,7 +86,8 @@ public class ExecuteApiController implements ExecuteApi {
 
     for (RecurringOrder recurring : toExtractSingle) {
       if (recurring.getCyclesSinceLast() + 1 == recurring.getCyclePeriod()) { //If we are executing payroll for this recurringOrder
-        oneTime.add(recurring.getOrder()); //add it to the ones we are executing.
+        // This line disabled because getOrder() no longer exists
+        //oneTime.add(recurring.getOrder()); //add it to the ones we are executing.
       }
     }
 

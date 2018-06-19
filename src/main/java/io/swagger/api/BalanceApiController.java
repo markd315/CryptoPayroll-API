@@ -61,7 +61,8 @@ public class BalanceApiController implements BalanceApi {
             }
 
             for (RecurringOrder order : orderService.getAllRecurringOrders()) {
-                orderAmount += getOrderAmountForOrder(requestedCurrency, order.getOrder());
+                // Following line needs to be refactored since getOrder no longer exists
+                //orderAmount += getOrderAmountForOrder(requestedCurrency, order.getOrder());
             }
             return orderAmount;
         } catch (NotFoundException e) {

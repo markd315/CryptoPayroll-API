@@ -33,7 +33,7 @@ public interface RecurringApi {
       produces = {"application/json"},
       consumes = {"application/json"},
       method = RequestMethod.POST)
-  ResponseEntity<Void> addRecurring(@ApiParam(value = "New recurring order", required = true) @Valid @RequestBody RecurringOrder body);
+  ResponseEntity<RecurringOrder> addRecurring(@ApiParam(value = "New recurring order", required = true) @Valid @RequestBody RecurringOrder body);
 
 
   @ApiOperation(value = "Stops a recurring order from the next and all future cycles", nickname = "deleteRecurring", notes = "", tags = {"x-tenant",})
@@ -58,7 +58,7 @@ public interface RecurringApi {
       produces = {"application/json"},
       consumes = {"application/json"},
       method = RequestMethod.GET)
-  ResponseEntity<Order> retrieveRecurring(@ApiParam(value = "x-tenant to retrieve orders for", required = true) @PathVariable("target") String target);
+  ResponseEntity<RecurringOrder> retrieveRecurring(@ApiParam(value = "x-tenant to retrieve orders for", required = true) @PathVariable("target") String target);
 
 
   @ApiOperation(value = "Update details about an existing recurring order", nickname = "updateRecurring", notes = "", tags = {"x-tenant",})
