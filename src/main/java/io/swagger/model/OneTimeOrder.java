@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 import java.util.UUID;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +15,19 @@ import org.springframework.validation.annotation.Validated;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
 public class OneTimeOrder implements Order {
+  public OneTimeOrder(UUID id, Double quantity, String destination, CurrencyEnum currency, DestinationTypeEnum destinationType,
+                      Boolean filled, Boolean recurring) {
+    this.id = id;
+    this.quantity = quantity;
+    this.destination = destination;
+    this.currency = currency;
+    this.destinationType = destinationType;
+    this.filled = filled;
+    this.recurring = recurring;
+  }
+
   @JsonProperty("id")
+
   @Id
   private UUID id = null;
 
@@ -200,4 +211,5 @@ public class OneTimeOrder implements Order {
     return false;
   }
 }
+
 

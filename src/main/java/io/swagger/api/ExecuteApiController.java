@@ -86,8 +86,9 @@ public class ExecuteApiController implements ExecuteApi {
 
     for (RecurringOrder recurring : toExtractSingle) {
       if (recurring.getCyclesSinceLast() + 1 == recurring.getCyclePeriod()) { //If we are executing payroll for this recurringOrder
-        // This line disabled because getOrder() no longer exists
-        //oneTime.add(recurring.getOrder()); //add it to the ones we are executing.
+        oneTime.add(new OneTimeOrder(recurring.getId(), recurring.getQuantity(), recurring.getDestination(), recurring.getCurrency(),
+            recurring.getDestinationType(),
+            false, false)); //add it to the ones we are executing.
       }
     }
 
@@ -103,7 +104,8 @@ public class ExecuteApiController implements ExecuteApi {
     //account loaded with cash
     double[]
         owed =
-        {balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.BTC), balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.ETH),
+        {balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.BTC),
+            balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.ETH),
             balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.LTC)};
     String[] currCodes = {Order.CurrencyEnum.BTC.toString(), Order.CurrencyEnum.ETH.toString(), Order.CurrencyEnum.LTC.toString()};
     for (int i = 0; i < 3; i++) {
@@ -229,3 +231,4 @@ public class ExecuteApiController implements ExecuteApi {
     return highestBid.getPrice().doubleValue();
   }
 }
+
