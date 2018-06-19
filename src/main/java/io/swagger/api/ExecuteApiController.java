@@ -8,6 +8,7 @@ import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.payments.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
@@ -57,7 +58,7 @@ public class ExecuteApiController implements ExecuteApi {
 
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
-    List<Order> oneTime = null;
+    List<OneTimeOrder> oneTime = null;
     try {
       oneTime = service.getAllOneTimeOrders();
     } catch (Exception e1) {
@@ -158,14 +159,14 @@ public class ExecuteApiController implements ExecuteApi {
     return 0.0;
   }
 
-  private void payAmountToWallet(double toPay, String address, Order.CurrencyEnum currency, Order.DestinationTypeEnum destinationType) {
+  private void payAmountToWallet(double toPay, String address, OneTimeOrder.CurrencyEnum currency, OneTimeOrder.DestinationTypeEnum destinationType) {
     //TODO
     double cryptoQuote = gdaxAskForPrice(currency);
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
   }
 
-  private double gdaxAskForPrice(Order.CurrencyEnum currency) {
+  private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
     //Use MarketDataService highest BID.
     MarketData data = marketDataService.getMarketDataOrderBook(currency.toString(), "1");
     List<OrderItem> bids = data.getBids();
