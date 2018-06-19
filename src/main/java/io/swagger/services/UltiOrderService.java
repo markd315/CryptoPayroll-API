@@ -77,6 +77,13 @@ public class UltiOrderService {
       recurringRepository.delete(id);
   }
 
+  public RecurringOrder getRecurringOrder(UUID id) throws NotFoundException {
+    RecurringOrder order = recurringRepository.findById(id);
+    if (order == null) {
+      throw new NotFoundException(400, "No such orders");
+    }
+    return order;
+  }
 
   public List<OneTimeOrder> getAllOneTimeOrders() throws NotFoundException {
     List<OneTimeOrder> orders = orderRepository.findAll();

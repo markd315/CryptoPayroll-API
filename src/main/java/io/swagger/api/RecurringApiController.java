@@ -72,6 +72,10 @@ public class RecurringApiController implements RecurringApi {
     String accept = request.getHeader("Accept");
 
     try {
+      RecurringOrder oldOrder = service.getRecurringOrder(UUID.fromString(target));
+      if (!code.equals(oldOrder.getCurrency().toString()) && !code.equals("USD")) {
+        return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+      }
       service.deleteRecurringOrder(UUID.fromString(target));
     } catch (Exception e) {
       e.printStackTrace();
