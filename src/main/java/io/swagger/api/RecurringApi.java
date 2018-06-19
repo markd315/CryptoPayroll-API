@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,7 @@ public interface RecurringApi {
       produces = {"application/json"},
       consumes = {"application/json"},
       method = RequestMethod.GET)
-  ResponseEntity<Void> retrieveRecurring(@ApiParam(value = "x-tenant to retrieve orders for", required = true) @PathVariable("target") String target);
+  ResponseEntity<Order> retrieveRecurring(@ApiParam(value = "x-tenant to retrieve orders for", required = true) @PathVariable("target") String target);
 
 
   @ApiOperation(value = "Update details about an existing recurring order", nickname = "updateRecurring", notes = "", tags = {"x-tenant",})
