@@ -60,8 +60,11 @@ public class ExecuteApiController implements ExecuteApi {
       e1.printStackTrace();
     }*/
     double usdToPurchase = 332.12;
-    System.out.println(paymentService.getPaymentTypes().get(0));
-    PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", "bc677162-d934-5f1a-968c-a496b1c1270b");
+    System.out.println(paymentService.getPaymentTypes().size() + " Payment types available");
+    System.out.println(paymentService.getPaymentTypes().get(0).toString());
+    String paymentTypeId = paymentService.getPaymentTypes().get(0).getId();
+    PaymentResponse res = depositService.depositViaPaymentMethod(new BigDecimal(usdToPurchase), "USD", paymentTypeId);
+    //TODO npe next line
     System.out.println(res.toString());
 
     //TODO a bunch of summation logic, then a bunch of API hits, as shown.
