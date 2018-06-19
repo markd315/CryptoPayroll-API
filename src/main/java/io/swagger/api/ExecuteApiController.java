@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import com.coinbase.exchange.api.accounts.Account;
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
@@ -100,7 +101,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     service.incrementOrResetAllRecurringOrders();
 
-    double amountWeOwePayees = balanceApiController.calculateOwed("USD").getBody();
+    double amountWeOwePayees = balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.USD);
 
     double usdWeOwn = queryAccountBalance();
 
@@ -110,9 +111,9 @@ public class ExecuteApiController implements ExecuteApi {
     //account loaded with cash
     double[]
         owed =
-        {balanceApiController.calculateOwed("BTC").getBody(), balanceApiController.calculateOwed("ETH").getBody(),
-            balanceApiController.calculateOwed("LTC").getBody()};
-    String[] currCodes = {"BTC", "ETH", "LTC"};
+        {balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.BTC), balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.ETH),
+            balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.LTC)};
+    String[] currCodes = {Order.CurrencyEnum.BTC.toString(), Order.CurrencyEnum.ETH.toString(), Order.CurrencyEnum.LTC.toString()};
     for (int i = 0; i < 3; i++) {
       orderCurrencyProtocol(owed[i], currCodes[i]);
     }
@@ -195,9 +196,15 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private double queryAccountBalance() {
-    //TODO
+    List<Account> accs = accountService.getAccounts();
+    double usdAccountBalance = 0.0;
+    for (Account acc : accs) { //Find the USD account.
+      if (acc.getCurrency().equalsIgnoreCase("USD")) {
+        usdAccountBalance += acc.getBalance().doubleValue();
+      }
+    }
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
-    return 0.0;
+    return usdAccountBalance;
   }
 
   private void payAmountToWallet(double toPay, String address, OneTimeOrder.CurrencyEnum currency, OneTimeOrder.DestinationTypeEnum destinationType) {
