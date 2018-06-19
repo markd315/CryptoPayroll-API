@@ -1,6 +1,7 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiParam;
 import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
@@ -42,16 +43,22 @@ public class BonusApiController implements BonusApi {
     this.service = orderService;
   }
 
-  public ResponseEntity<Order> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody OneTimeOrder body) {
+  public ResponseEntity<OneTimeOrder> addBonus(@ApiParam(value = "One-time order", required = true) @Valid @RequestBody OneTimeOrder body) {
     body.filled(false).id(UUID.randomUUID());//Server overridden fields
-    service.addOrder(body);
-    Order toReturn = null;
-    try {
-      toReturn = service.findOrderById(body.getId());
+    OneTimeOrder toReturn = null;
+
+    // Check valid currency
+    if (body.getCurrency() == Order.CurrencyEnum.USD) {
+      return ResponseEntity.badRequest().build();
+    }
+
+    service.addOneTimeOrder(body);
+
+    try { // retrieve stored entry to respond with real UUID
+      toReturn = service.findOneTimeOrderById(body.getId());
     } catch (Exception e1) {
       e1.printStackTrace();
     }
-    return new ResponseEntity<Order>(toReturn,
-        HttpStatus.OK);
+    return new ResponseEntity<OneTimeOrder>(toReturn, HttpStatus.OK);
   }
 }

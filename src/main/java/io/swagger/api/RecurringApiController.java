@@ -2,6 +2,7 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
+import io.swagger.model.OneTimeOrder;
 import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
@@ -39,19 +40,30 @@ public class RecurringApiController implements RecurringApi {
     this.service = orderService;
   }
 
-  public ResponseEntity<Void> addRecurring(@ApiParam(value = "New recurring order", required = true) @Valid @RequestBody RecurringOrder body) {
+  public ResponseEntity<RecurringOrder> addRecurring(@ApiParam(value = "New recurring order", required = true) @Valid @RequestBody RecurringOrder body) {
     String accept = request.getHeader("Accept");
+    body.filled(false).id(UUID.randomUUID());//Server overridden fields
+    RecurringOrder toReturn = null;
+
     try {
       if (body == null) {
         throw new NullPointerException("Request body cannot be null");
       }
+
+      // Check valid currency
+      if (body.getCurrency() == Order.CurrencyEnum.USD)
+        return ResponseEntity.badRequest().build();
+
       //cyclePeriod should be set by the user and adding recurring order should not affact the period
-      service.addOrder(body.getOrder());
+
+      service.addRecurringOrder(body);
+      toReturn = service.findRecurringOrderById(body.getId()); // retrieve stored entry to respond with real UUID
+
     } catch (Exception e) {
       e.printStackTrace();
-      return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<RecurringOrder>(toReturn, HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<Void>(HttpStatus.OK);
+    return new ResponseEntity<RecurringOrder>(toReturn, HttpStatus.OK);
   }
 
   public ResponseEntity<Void> deleteRecurring(
@@ -61,16 +73,16 @@ public class RecurringApiController implements RecurringApi {
     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
   }
 
-  public ResponseEntity<Order> retrieveRecurring(
+  public ResponseEntity<RecurringOrder> retrieveRecurring(
       @ApiParam(value = "x-tenant to retrieve orders for", required = true) @PathVariable("target") String target) {
     String accept = request.getHeader("Accept");
-    Order toReturn = null;
+    RecurringOrder toReturn = null;
     try {
-      toReturn = service.findOrderById(UUID.fromString(target));
+      toReturn = service.findRecurringOrderById(UUID.fromString(target));
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new ResponseEntity<Order>(toReturn, HttpStatus.OK);
+    return new ResponseEntity<RecurringOrder>(toReturn, HttpStatus.OK);
 
   }
 
