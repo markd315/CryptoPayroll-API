@@ -17,7 +17,30 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-18T11:50:46.970-04:00")
 
-public class RecurringOrder extends OneTimeOrder {
+public class RecurringOrder implements Order{
+
+  @JsonProperty("id")
+  @Id
+  private UUID id = null;
+
+  @JsonProperty("quantity")
+  private Double quantity = null;
+
+  @JsonProperty("destination")
+  private String destination = null;
+
+  @JsonProperty("currency")
+  private Order.CurrencyEnum currency = null;
+
+  @JsonProperty("destinationType")
+  private Order.DestinationTypeEnum destinationType = null;
+
+  @JsonProperty("filled")
+  private Boolean filled = null;
+
+  @JsonProperty("recurring")
+  protected Boolean recurring = true;
+
 
   @JsonProperty("cyclePeriod")
   private Integer cyclePeriod = 1;
@@ -39,19 +62,6 @@ public class RecurringOrder extends OneTimeOrder {
   @NotNull
 
   @Valid
-
-  public RecurringOrder getOrder() {
-    return this;
-  }
-
-  public void setOrder(OneTimeOrder order) {
-    setId(order.getId());
-    setCurrency((order.getCurrency()));
-    setQuantity((order.getQuantity()));
-    setDestination(order.getDestination());
-    setDestinationType(order.getDestinationType());
-    setFilled(order.isFilled());
-  }
 
   public RecurringOrder cyclePeriod(Integer cyclePeriod) {
     this.cyclePeriod = cyclePeriod;
@@ -101,14 +111,19 @@ public class RecurringOrder extends OneTimeOrder {
       return false;
     }
     RecurringOrder recurringOrder = (RecurringOrder) o;
-    return Objects.equals(this.getOrder(), recurringOrder.getOrder()) &&
-        Objects.equals(this.cyclePeriod, recurringOrder.cyclePeriod) &&
-        Objects.equals(this.cyclesSinceLast, recurringOrder.cyclesSinceLast);
+    return Objects.equals(this.getId(), recurringOrder.getId()) &&
+        Objects.equals(this.getCurrency(), recurringOrder.getCurrency()) &&
+        Objects.equals(this.getQuantity(), recurringOrder.getQuantity()) &&
+        Objects.equals(this.getDestination(), recurringOrder.getDestination()) &&
+        Objects.equals(this.getDestinationType(), recurringOrder.getDestinationType()) &&
+        Objects.equals(this.isFilled(), recurringOrder.isFilled()) &&
+        Objects.equals(this.getCyclePeriod(), recurringOrder.getCyclePeriod()) &&
+        Objects.equals(this.getCyclesSinceLast(), recurringOrder.getCyclesSinceLast());
   }
 
-  @Override
+  //@Override
   public int hashCode() {
-    return Objects.hash(getOrder(), cyclePeriod, cyclesSinceLast);
+    return Objects.hash(getId(), getCurrency(), getQuantity(), getDestination(), getDestinationType(), isFilled(), getCyclePeriod(), getCyclesSinceLast());
   }
 
   @Override
@@ -116,107 +131,223 @@ public class RecurringOrder extends OneTimeOrder {
     StringBuilder sb = new StringBuilder();
     sb.append("class RecurringOrder {\n");
 
-    sb.append("    order: ").append(toIndentedString(getOrder())).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
+    sb.append("    quantity: ").append(toIndentedString(quantity)).append("\n");
+    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
+    sb.append("    destinationType: ").append(toIndentedString(destinationType)).append("\n");
+    sb.append("    filled: ").append(toIndentedString(filled)).append("\n");
     sb.append("    cyclePeriod: ").append(toIndentedString(cyclePeriod)).append("\n");
     sb.append("    cyclesSinceLast: ").append(toIndentedString(cyclesSinceLast)).append("\n");
     sb.append("}");
     return sb.toString();
   }
-/*
+
   @Override
   public Order id(UUID id) {
-    return super.id(id);
+    this.id = id;
+    return this;
   }
 
   @Override
+  @ApiModelProperty(value = "Overwritten by server")
+
   public UUID getId() {
-    return super.getId();
+    return id;
   }
 
   @Override
   public void setId(UUID id) {
-    super.setId(id);
+    this.id = id;
   }
 
   @Override
   public Order currency(CurrencyEnum currency) {
-    return super.currency(currency);
+    this.currency = currency;
+    return this;
   }
 
   @Override
+  @ApiModelProperty(required = true, value = "Three-digit trade code")
+  @NotNull
+
   public CurrencyEnum getCurrency() {
-    return super.getCurrency();
+    return currency;
   }
 
   @Override
   public void setCurrency(CurrencyEnum currency) {
-    super.setCurrency(currency);
+    this.currency = currency;
   }
 
   @Override
   public Order quantity(Double quantity) {
-    return super.quantity(quantity);
+    this.quantity = quantity;
+    return this;
   }
 
   @Override
+  @ApiModelProperty(required = true, value = "Amount of currency to send")
+  @NotNull
+
   public double getQuantity() {
-    return super.getQuantity();
+    return quantity;
   }
 
   @Override
   public void setQuantity(Double quantity) {
-    super.setQuantity(quantity);
+    this.quantity = quantity;
   }
 
   @Override
   public Order destination(String destination) {
-    return super.destination(destination);
+    this.destination = destination;
+    return this;
   }
 
   @Override
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
   public String getDestination() {
-    return super.getDestination();
+    return destination;
   }
 
   @Override
   public void setDestination(String destination) {
-    super.setDestination(destination);
+    this.destination = destination;
   }
 
   @Override
-  public Order destinationType(Order.DestinationTypeEnum destinationType) {
-    return super.destinationType(destinationType);
+  public Order destinationType(DestinationTypeEnum destinationType) {
+    this.destinationType = destinationType;
+    return this;
   }
 
   @Override
-  public Order.DestinationTypeEnum getDestinationType() {
-    return getDestinationType();
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+  public DestinationTypeEnum getDestinationType() {
+    return destinationType;
   }
 
   @Override
-  public void setDestinationType(Order.DestinationTypeEnum destinationType) {
-    setDestinationType(destinationType);
+  public void setDestinationType(DestinationTypeEnum destinationType) {
+    this.destinationType = destinationType;
   }
 
   @Override
   public Order filled(Boolean filled) {
-    return super.filled(filled);
+    this.filled = filled;
+    return this;
   }
 
   @Override
+  @ApiModelProperty(value = "Overwritten by server")
   public boolean isFilled() {
-    return isFilled();
+    return filled;
   }
 
   @Override
   public void setFilled(Boolean filled) {
-    getOrder().setFilled(filled);
+    this.filled = filled;
   }
-*/
+
+
+  /*//@Override
+  public Order id(UUID id) {
+    return supid(id);
+  }
+
+  //@Override
+  public UUID getId() {
+    return super.getId();
+  }
+
+  //@Override
+  public void setId(UUID id) {
+    super.setId(id);
+  }
+
+  //@Override
+  public Order currency(CurrencyEnum currency) {
+    return super.currency(currency);
+  }
+
+  //@Override
+  public CurrencyEnum getCurrency() {
+    return super.getCurrency();
+  }
+
+  //@Override
+  public void setCurrency(CurrencyEnum currency) {
+    super.setCurrency(currency);
+  }
+
+  //@Override
+  public Order quantity(Double quantity) {
+    return super.quantity(quantity);
+  }
+
+  //@Override
+  public double getQuantity() {
+    return super.getQuantity();
+  }
+
+  //@Override
+  public void setQuantity(Double quantity) {
+    super.setQuantity(quantity);
+  }
+
+  //@Override
+  public Order destination(String destination) {
+    return super.destination(destination);
+  }
+
+  //@Override
+  public String getDestination() {
+    return super.getDestination();
+  }
+
+  //@Override
+  public void setDestination(String destination) {
+    super.setDestination(destination);
+  }
+
+  //@Override
+  public Order destinationType(Order.DestinationTypeEnum destinationType) {
+    return super.destinationType(destinationType);
+  }
+
+  //@Override
+  public Order.DestinationTypeEnum getDestinationType() {
+    return getDestinationType();
+  }
+
+  //@Override
+  public void setDestinationType(Order.DestinationTypeEnum destinationType) {
+    setDestinationType(destinationType);
+  }
+
+  //@Override
+  public Order filled(Boolean filled) {
+    return super.filled(filled);
+  }
+
+  //@Override
+  public boolean isFilled() {
+    return isFilled();
+  }
+
+  //@Override
+  public void setFilled(Boolean filled) {
+    getOrder().setFilled(filled);
+  }*/
+
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  @Override
+  //@Override
   public String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
@@ -224,7 +355,7 @@ public class RecurringOrder extends OneTimeOrder {
     return o.toString().replace("\n", "\n    ");
   }
 
-  @Override
+  //@Override
   public boolean isRecurring() {
     return true;
   }

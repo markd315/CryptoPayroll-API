@@ -8,14 +8,21 @@ import io.swagger.repo.RecurringRepo;
 import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UltiOrderService {
-  private final OrderRepo orderRepository;
-  private final RecurringRepo recurringRepository;
+  @Autowired
+  private OrderRepo orderRepository;
 
+  @Autowired
+  private RecurringRepo recurringRepository;
+
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   public UltiOrderService(OrderRepo orderRepository, RecurringRepo recurringRepository) {
@@ -35,6 +42,7 @@ public class UltiOrderService {
   public RecurringOrder findRecurringOrderById(UUID id) throws NotFoundException {
     RecurringOrder order = recurringRepository.findById(id);
     if (order == null) {
+      log.info(id.toString());
       throw new NotFoundException(404, "No such order");
     }
     return order;
@@ -105,7 +113,7 @@ public class UltiOrderService {
       if (recurring.getCyclesSinceLast() == recurring.getCyclePeriod()) {
         recurring.setCyclesSinceLast(0); //reset the cyclical field
       }
-      if (recurringRepository.findById(recurring.getOrder().getId()) != null) //Only save if we can find a version of this already
+      if (recurringRepository.findById(recurring.getId()) != null) //Only save if we can find a version of this already
       {
         recurringRepository.save(recurring);
       } else {
