@@ -4,7 +4,6 @@ import com.coinbase.exchange.api.accounts.Account;
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
-import com.coinbase.exchange.api.entity.NewOrderSingle;
 import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
@@ -12,7 +11,6 @@ import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.orders.OrderService;
 import com.coinbase.exchange.api.payments.CoinbaseAccount;
 import com.coinbase.exchange.api.payments.PaymentService;
-import com.coinbase.exchange.api.payments.PaymentType;
 import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
@@ -63,8 +61,6 @@ public class ExecuteApiController implements ExecuteApi {
   @Autowired
   private WithdrawalsService withdrawalsService;
 
-  private List<NewOrderSingle> ourOpenOrders = new ArrayList<NewOrderSingle>();
-
   @Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
     this.objectMapper = objectMapper;
@@ -73,7 +69,8 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   public ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception {
+      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code)
+      throws Exception {
     List<Order> ordersToFill = new ArrayList();
     try {
       ordersToFill.addAll(service.getAllOneTimeOrders());
@@ -178,7 +175,9 @@ public class ExecuteApiController implements ExecuteApi {
   //TODO we might need to break this into two seperate execution stages over several hours/days, one for loading USD and another for paying out.
   //Bank->USD
   private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
-    if (toPurchaseForCycle <= 0) return;
+    if (toPurchaseForCycle <= 0) {
+      return;
+    }
 
     List<CoinbaseAccount> pmts = paymentService.getCoinbaseAccounts();
     CoinbaseAccount usdDepositer = null;
@@ -188,7 +187,7 @@ public class ExecuteApiController implements ExecuteApi {
 //      }
 //    }
     usdDepositer = paymentService.getCoinbaseAccounts().get(4);
-  // usdDepositer = paymentService.getPaymentTypes().get(3);
+    // usdDepositer = paymentService.getPaymentTypes().get(3);
     /*
     PaymentType{id='b22911ee-ef35-5c97-bdd4-aef3f65618d9', type='fiat_account', name='GBP Wallet', currency='GBP', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@4f99769a}
     PaymentType{id='e49c8d15-547b-464e-ac3d-4b9d20b360ec', type='fiat_account', name='USD Wallet', currency='USD', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@196c6487}
@@ -214,7 +213,6 @@ public class ExecuteApiController implements ExecuteApi {
     BigDecimal sizeBTC = toPayUSD.divide(price);
     NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
     orderService.createOrder(ourOrder);
-    ourOpenOrders.add(ourOrder); //TODO do we really need this?
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.

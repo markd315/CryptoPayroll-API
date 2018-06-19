@@ -31,6 +31,6 @@ public interface ExecuteApi {
       method = RequestMethod.POST)
   ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code)
-      throws InsufficientResourcesException;
+      throws Exception;
 
 }
