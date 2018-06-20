@@ -94,7 +94,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     double usdWeOwn = queryAccountBalance();
 
-    double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
+    double toPurchaseForCycle = (1.03 * amountWeOwePayees - usdWeOwn + 10.0);//Should be enough to order in order to ensure transfer can process
     try {
       placeUSDDespoit(toPurchaseForCycle);
     } catch (InsufficientResourcesException e1) {
