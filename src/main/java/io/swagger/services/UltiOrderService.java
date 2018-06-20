@@ -5,13 +5,17 @@ import io.swagger.model.OneTimeOrder;
 import io.swagger.model.RecurringOrder;
 import io.swagger.repo.OrderRepo;
 import io.swagger.repo.RecurringRepo;
+
+import java.nio.file.InvalidPathException;
 import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.BooleanOperators;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,14 +64,11 @@ public class UltiOrderService {
   }
 
   public void addRecurringOrder(RecurringOrder body) {
-    try {
       RecurringOrder order = recurringRepository.findById(body.getId());
-      if (order == null) {
-        throw new NotFoundException(404, "No such order");
+      if (order != null) {
+        recurringRepository.delete(order.getId());
       }
-    } catch (Exception e1) {
       recurringRepository.save(body);
-    }
   }
 
   public void deleteRecurringOrder(UUID id) throws NotFoundException {
@@ -139,5 +140,18 @@ public class UltiOrderService {
         }
       }
     }
+  }
+  public void updateRecurringOrder(RecurringOrder body, UUID target, String code) throws NotFoundException {
+      RecurringOrder oldOrder = recurringRepository.findById(target);
+      if (oldOrder == null) {
+        throw new NotFoundException(404, "No Such Order");
+      }
+      if (body.getId().compareTo(target) != 0) {
+        throw new NotFoundException(401, "Path does not match id field");
+      }
+      if (oldOrder.getCurrency() != body.getCurrency()) {
+        throw new NotFoundException(401, "Currency type cannot be changed");
+      }
+      recurringRepository.save(body);
   }
 }
