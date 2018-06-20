@@ -26,7 +26,6 @@ import javax.naming.InsufficientResourcesException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -148,7 +147,7 @@ public class ExecuteApiController implements ExecuteApi {
         }
       } catch (UnexpectedException e) {
         e.printStackTrace();
-      } catch (InvalidPropertyException k) {
+      } catch (IllegalStateException k) {
         System.err.println("Already finished purchasing for this cycle.");
         amountOrderFilledFor = 0;
         toPurchaseForCycle = 0;
@@ -161,7 +160,7 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Not concurrently safe to be used for multiple open orders.
-  private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException {
+  private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException, IllegalStateException {
     try {
       Thread.sleep(334);
     } catch (InterruptedException e) {
