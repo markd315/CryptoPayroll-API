@@ -1,9 +1,18 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'docker'
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
 
 group = 'io.swagger'
 version = '1.0.0'
+applicationName = "cryptopayroll"
 description = """CryptoPayroll"""
 mainClassName = 'io.swagger.Swagger2SpringBoot'
 sourceCompatibility = 1.8
@@ -11,6 +20,16 @@ targetCompatibility = 1.8
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+docker {
+    baseImage "frolvlad/alpine-oraclejdk8:slim"
 }
 
 repositories {
