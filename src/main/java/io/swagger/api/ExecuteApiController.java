@@ -237,7 +237,7 @@ public class ExecuteApiController implements ExecuteApi {
     //TODO
     double cryptoQuote = gdaxAskForPrice(currencyEnum);
     BigDecimal price = new BigDecimal(cryptoQuote);
-    price.setScale(2, BigDecimal.ROUND_HALF_DOWN); //We want to undercut the market price by one cent.
+    price.setScale(2, BigDecimal.ROUND_HALF_UP); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
     BigDecimal sizeBTC = toPayUSD.divide(price, 8, BigDecimal.ROUND_UP);//GDAX can handle 8 decimal points
     NewLimitOrderSingle
