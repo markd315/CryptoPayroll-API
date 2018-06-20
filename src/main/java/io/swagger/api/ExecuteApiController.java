@@ -4,7 +4,6 @@ import com.coinbase.exchange.api.accounts.Account;
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
-import com.coinbase.exchange.api.entity.NewOrderSingle;
 import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
@@ -95,7 +94,6 @@ public class ExecuteApiController implements ExecuteApi {
 
     double usdWeOwn = queryAccountBalance();
 
-
     double toPurchaseForCycle = (1.03 * amountWeOwePayees - usdWeOwn + 10.0);//Should be enough to order in order to ensure transfer can process
     try {
       placeUSDDespoit(toPurchaseForCycle);
@@ -166,12 +164,7 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Not concurrently safe to be used for multiple open orders.
-<<<<<<< HEAD
   private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException, IllegalStateException {
-=======
-
-  private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException {
->>>>>>> b0204909929b19d3f07c40de15915af1cdc2548f
     try {
       Thread.sleep(334);
     } catch (InterruptedException e) {
