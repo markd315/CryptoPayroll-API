@@ -141,13 +141,16 @@ public class UltiOrderService {
       }
     }
   }
-  public void updateRecurringOrder(RecurringOrder body, UUID target) throws NotFoundException {
+  public void updateRecurringOrder(RecurringOrder body, UUID target, String code) throws NotFoundException {
       RecurringOrder oldOrder = recurringRepository.findById(target);
       if (oldOrder == null) {
         throw new NotFoundException(404, "No Such Order");
       }
       if (body.getId().compareTo(target) != 0) {
         throw new NotFoundException(401, "Path does not match id field");
+      }
+      if (oldOrder.getCurrency() != body.getCurrency()) {
+        throw new NotFoundException(401, "Currency type cannot be changed");
       }
       recurringRepository.save(body);
   }
