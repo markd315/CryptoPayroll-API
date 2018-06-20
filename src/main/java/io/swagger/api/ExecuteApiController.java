@@ -228,8 +228,11 @@ public class ExecuteApiController implements ExecuteApi {
     NewLimitOrderSingle
         ourOrder =
         new NewLimitOrderSingle(sizeBTC, price.setScale(2, BigDecimal.ROUND_DOWN), Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
+    ourOrder.setSide("buy");
+    ourOrder.setProduct_id(currencyEnum.toString() + "-USD");
     //TODO recover gracefully in case we aren't fast enough to get the current price, and it goes down.
-    orderService.createOrder(ourOrder);
+    com.coinbase.exchange.api.orders.Order forDebug = orderService.createOrder(ourOrder);
+    System.out.println(forDebug);
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
