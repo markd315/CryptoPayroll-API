@@ -228,6 +228,7 @@ public class ExecuteApiController implements ExecuteApi {
     NewLimitOrderSingle
         ourOrder =
         new NewLimitOrderSingle(sizeBTC, price.setScale(2, BigDecimal.ROUND_DOWN), Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
+    //TODO recover gracefully in case we aren't fast enough to get the current price, and it goes down.
     orderService.createOrder(ourOrder);
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
