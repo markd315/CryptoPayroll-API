@@ -1,12 +1,9 @@
 package com.coinbase.exchange.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 public abstract class MonetaryRequest {
-  @JsonProperty("amount")
   protected BigDecimal amount;
-  @JsonProperty("currency")
   protected String currency;
 
   protected MonetaryRequest(BigDecimal amount, String currency) {
