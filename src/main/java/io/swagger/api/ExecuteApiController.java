@@ -4,7 +4,6 @@ import com.coinbase.exchange.api.accounts.Account;
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
-import com.coinbase.exchange.api.entity.NewOrderSingle;
 import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
@@ -62,8 +61,6 @@ public class ExecuteApiController implements ExecuteApi {
   private OrderService orderService;
   @Autowired
   private WithdrawalsService withdrawalsService;
-
-  private List<NewOrderSingle> ourOpenOrders = new ArrayList<NewOrderSingle>();
 
   @Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
@@ -227,7 +224,6 @@ public class ExecuteApiController implements ExecuteApi {
     BigDecimal sizeBTC = toPayUSD.divide(price).setScale(8, BigDecimal.ROUND_UP);//GDAX can handle 8 decimal points
     NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
     orderService.createOrder(ourOrder);
-    ourOpenOrders.add(ourOrder); //TODO do we really need this?
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
