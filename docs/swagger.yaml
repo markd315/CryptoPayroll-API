@@ -125,8 +125,6 @@ definitions:
             - destination
             - currency
             - destinationType
-            - filled
-            - recurring
             - cyclePeriod
             - cyclesSinceLast
         properties:
