@@ -224,7 +224,7 @@ public class ExecuteApiController implements ExecuteApi {
     BigDecimal price = new BigDecimal(cryptoQuote);
     price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
-    BigDecimal sizeBTC = toPayUSD.divide(price);
+    BigDecimal sizeBTC = toPayUSD.divide(price).setScale(8, BigDecimal.ROUND_UP);//GDAX can handle 8 decimal points
     NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
     orderService.createOrder(ourOrder);
     ourOpenOrders.add(ourOrder); //TODO do we really need this?
