@@ -71,6 +71,8 @@ public class ExecuteApiController implements ExecuteApi {
 
   public ResponseEntity<Void> executePayments(
       @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
+    //TODO debug
+    withdrawalsService.makeWithdrawalToCryptoAccount(new BigDecimal(.03), "BTC", "1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v");
     List<Order> ordersToFill = new ArrayList();
     try {
       ordersToFill.addAll(service.getAllOneTimeOrders());
@@ -282,4 +284,3 @@ public class ExecuteApiController implements ExecuteApi {
     return highestBid.getPrice().doubleValue();
   }
 }
-
