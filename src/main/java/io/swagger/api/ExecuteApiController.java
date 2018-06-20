@@ -129,22 +129,22 @@ public class ExecuteApiController implements ExecuteApi {
     if (toPurchaseForCycle < .01) {
       return;
     }
-    placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 10) { //TODO reconsider this constant 10. But with 0, if we get very-nearly-complete
+      placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
       //TODO fills we might have a tiny amount remaining to buy and our small buys will be REJECTED by GDAX. This is a workaround.
       try {
-        Thread.sleep(334);//Strictest rate limit is 3 per second
+        Thread.sleep(500);//Strictest rate limit is 3 per second
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+      //Wait 1/2 second before cancelling request.
       try {
         amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
       } catch (UnexpectedException e) {
         e.printStackTrace();
       }
       toPurchaseForCycle -= amountOrderFilledFor;
-      placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
     }
   }
 
