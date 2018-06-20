@@ -259,7 +259,7 @@ public class ExecuteApiController implements ExecuteApi {
     }
   }
 
-  private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
+  public double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
     //Use MarketDataService highest BID.
     MarketData data = marketDataService.getMarketDataOrderBook(currency.toString() + "-USD", "1");
     List<OrderItem> bids = data.getBids();
