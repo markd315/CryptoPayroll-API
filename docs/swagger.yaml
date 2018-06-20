@@ -29,7 +29,9 @@ paths:
             responses: {'200': {description: 'Valid'}, '401': {description: 'Unauthorized'}}
             summary: 'Returns a list of all orders that will execute on the next payment cycle'
             operationId: returnOrders
+            consumes: [application/json]
             produces: [application/json]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}]
             #security: [{payroll_auth: ['read:admin']}]
 
     /balance:
@@ -37,8 +39,9 @@ paths:
             tags: [admin]
             summary: 'Return the USD commitment for this cryptocurrency, or the total USD commitment (sum of three)'
             operationId: calculateOwed
+            consumes: [application/json]
             produces: [application/json]
-            parameters: [{in: header, type: string, name: currency, enum: [USD, BTC, LTC, ETH], description: 'Three character currency code', required: true}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: header, type: string, name: currency, enum: [USD, BTC, LTC, ETH], description: 'Three character currency code', required: true}]
             responses: {'200': {description: 'Valid'}, '401': {description: 'Unauthorized'}}
             #security: [{payroll_auth: ['read:admin']}]
 
@@ -48,7 +51,7 @@ paths:
             summary: 'Execute all orders and log results'
             consumes: [application/json]
             produces: [application/json]
-            parameters: [{in: header, name: code, description: 'confirm code', required: true, type: string}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: header, name: code, description: 'confirm code', required: true, type: string}]
             operationId: executePayments
             responses: {'200': {description: 'Valid'}, '401': {description: 'Unauthorized'}, '400': {description: 'Invalid Body'}}
             #security: [{payroll_auth: ['spend:admin']}]
@@ -59,14 +62,14 @@ paths:
             operationId: addRecurring
             consumes: [application/json]
             produces: [application/json]
-            parameters: [{in: body, name: body, description: 'New recurring order', required: true, schema: {$ref: '#/definitions/RecurringOrder'}}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: body, name: body, description: 'New recurring order', required: true, schema: {$ref: '#/definitions/RecurringOrder'}}]
             responses: {'200': {description: 'Valid'}, '401': {description: 'Unauthorized'}, '400': {description: 'Invalid Body'}}
             #security: [{payroll_auth: ['place:orders']}]
     /recurring/{target}:
         put:
             tags: [x-tenant]
             summary: 'Update details about an existing recurring order'
-            parameters: [{in: body, name: body, description: 'Update to recurring order', required: true, schema: {$ref: '#/definitions/RecurringOrder'}}, {in: path, name: target, description: 'The UUID of the recurring order to replace', required: true, type: string}, {in: header, name: code, description: 'The currency to override (USD: all)', type: string, enum: [USD, BTC, ETH, LTC]}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: body, name: body, description: 'Update to recurring order', required: true, schema: {$ref: '#/definitions/RecurringOrder'}}, {in: path, name: target, description: 'The UUID of the recurring order to replace', required: true, type: string}, {in: header, name: code, description: 'The currency to override (USD: all)', type: string, enum: [USD, BTC, ETH, LTC]}]
             operationId: updateRecurring
             consumes: [application/json]
             produces: [application/json]
@@ -75,7 +78,7 @@ paths:
         delete:
             tags: [x-tenant]
             summary: 'Stops a recurring order from the next and all future cycles'
-            parameters: [{in: path, name: target, description: 'The recurring order to remove', required: true, type: string}, {in: header, name: code, description: 'The currency to remove (USD: all)', type: string, enum: [USD, BTC, ETH, LTC]}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: path, name: target, description: 'The recurring order to remove', required: true, type: string}, {in: header, name: code, description: 'The currency to remove (USD: all)', type: string, enum: [USD, BTC, ETH, LTC]}]
             operationId: deleteRecurring
             consumes: [application/json]
             produces: [application/json]
@@ -84,7 +87,7 @@ paths:
         get:
             tags: [x-tenant]
             summary: 'Retrieve details about a specific recurring order'
-            parameters: [{in: path, name: target, description: 'ID of order to get (Will return for any/all currencies)', required: true, type: string}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: path, name: target, description: 'ID of order to get (Will return for any/all currencies)', required: true, type: string}]
             operationId: retrieveRecurring
             consumes: [application/json]
             produces: [application/json]
@@ -95,7 +98,7 @@ paths:
             tags: [x-tenant]
             summary: 'Add a one-time order to be executed in the next cycle'
             operationId: addBonus
-            parameters: [{in: body, name: body, description: 'One-time order', required: true, schema: {$ref: '#/definitions/Order'}}]
+            parameters: [{in: header, type: string, name: Content-Type, description: 'application/json', required: true}, {in: body, name: body, description: 'One-time order', required: true, schema: {$ref: '#/definitions/Order'}}]
             consumes: [application/json]
             produces: [application/json]
             responses: {'200': {description: 'Valid'}, '401': {description: 'Unauthorized'}, '400': {description: 'Invalid Body'}}
