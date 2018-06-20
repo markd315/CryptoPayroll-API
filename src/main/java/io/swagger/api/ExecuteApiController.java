@@ -225,7 +225,9 @@ public class ExecuteApiController implements ExecuteApi {
     price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
     BigDecimal sizeBTC = toPayUSD.divide(price, 8, BigDecimal.ROUND_UP);//GDAX can handle 8 decimal points
-    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
+    NewLimitOrderSingle
+        ourOrder =
+        new NewLimitOrderSingle(sizeBTC, price.setScale(2, BigDecimal.ROUND_DOWN), Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
     orderService.createOrder(ourOrder);
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
