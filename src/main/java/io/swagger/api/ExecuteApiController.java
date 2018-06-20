@@ -26,6 +26,7 @@ import javax.naming.InsufficientResourcesException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -147,6 +148,10 @@ public class ExecuteApiController implements ExecuteApi {
         }
       } catch (UnexpectedException e) {
         e.printStackTrace();
+      } catch (InvalidPropertyException k) {
+        System.err.println("Already finished purchasing for this cycle.");
+        amountOrderFilledFor = 0;
+        toPurchaseForCycle = 0;
       }
       toPurchaseForCycle -= amountOrderFilledFor;
       if (toPurchaseForCycle < 0.0) {
@@ -167,7 +172,7 @@ public class ExecuteApiController implements ExecuteApi {
       throw new UnexpectedException("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
     }
     if (openOrders.isEmpty()) {
-      return 999999999999999.99;//We have filled the order.
+      throw new IllegalStateException("We have already filled the order.");//We have filled the order.
     }
     com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
     double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
