@@ -100,7 +100,7 @@ public class RecurringApiController implements RecurringApi {
                                               @ApiParam(value = "The recurring order to replace", required = true) @PathVariable("target") String target,
                                               @ApiParam(value = "The currency to override (USD: all)", allowableValues = "USD, BTC, ETH, LTC") @RequestHeader(value = "code", required = false) String code) {
     String accept = request.getHeader("Accept");
-
+    body.filled(false);
     try {
       service.updateRecurringOrder(body, UUID.fromString(target));
     } catch (Exception e) {
