@@ -126,6 +126,9 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) {
+    if (toPurchaseForCycle < .01) {
+      return;
+    }
     placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 10) { //TODO reconsider this constant 10. But with 0, if we get very-nearly-complete
