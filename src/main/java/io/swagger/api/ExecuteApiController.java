@@ -12,7 +12,6 @@ import com.coinbase.exchange.api.marketdata.OrderItem;
 import com.coinbase.exchange.api.orders.OrderService;
 import com.coinbase.exchange.api.payments.CoinbaseAccount;
 import com.coinbase.exchange.api.payments.PaymentService;
-import com.coinbase.exchange.api.payments.PaymentType;
 import com.coinbase.exchange.api.withdrawals.WithdrawalsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
@@ -21,6 +20,7 @@ import io.swagger.model.Order;
 import io.swagger.model.RecurringOrder;
 import io.swagger.services.UltiOrderService;
 import java.math.BigDecimal;
+import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.InsufficientResourcesException;
@@ -73,7 +73,7 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   public ResponseEntity<Void> executePayments(
-      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) throws Exception {
+      @ApiParam(value = "confirm code", required = true) @RequestHeader(value = "code", required = true) String code) {
     List<Order> ordersToFill = new ArrayList();
     try {
       ordersToFill.addAll(service.getAllOneTimeOrders());
@@ -93,15 +93,16 @@ public class ExecuteApiController implements ExecuteApi {
       }
     }
 
-    service.incrementOrResetAllRecurringOrders();
-
     double amountWeOwePayees = balanceApiController.getTotalOrderAmountForCurrency(Order.CurrencyEnum.USD);
 
     double usdWeOwn = queryAccountBalance();
 
     double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
-    placeUSDDespoit(toPurchaseForCycle);
-
+    try {
+      placeUSDDespoit(toPurchaseForCycle);
+    } catch (InsufficientResourcesException e1) {
+      e1.printStackTrace();
+    }
     //account loaded with cash
     double[]
         owed =
@@ -118,10 +119,16 @@ public class ExecuteApiController implements ExecuteApi {
     for (Order order : ordersToFill) {
       payAmountToWallet(order.getQuantity(), order.getDestination(), order.getCurrency(), order.getDestinationType());
     }
+    service.incrementOrResetAllRecurringOrders(); //Do this down here so we don't forget to pay people.
+    try {
+      service.wipeAllOneTimeOrders();
+    } catch (NotFoundException e) {
+      e.printStackTrace();
+    }
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
-  private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) throws Exception {
+  private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) {
     placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 10) { //TODO reconsider this constant 10. But with 0, if we get very-nearly-complete
@@ -131,14 +138,18 @@ public class ExecuteApiController implements ExecuteApi {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+      try {
+        amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+      } catch (UnexpectedException e) {
+        e.printStackTrace();
+      }
       toPurchaseForCycle -= amountOrderFilledFor;
       placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
     }
   }
 
   //Not concurrently safe to be used for multiple open orders.
-  private double cancelOrderForUsdReturnAmountAlreadySpent() throws Exception {
+  private double cancelOrderForUsdReturnAmountAlreadySpent() throws UnexpectedException {
     try {
       Thread.sleep(334);
     } catch (InterruptedException e) {
@@ -146,7 +157,7 @@ public class ExecuteApiController implements ExecuteApi {
     }
     List<com.coinbase.exchange.api.orders.Order> openOrders = orderService.getOpenOrders();
     if (openOrders.size() > 1) {
-      throw new Exception("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
+      throw new UnexpectedException("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
     }
     com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
     double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
@@ -178,7 +189,9 @@ public class ExecuteApiController implements ExecuteApi {
   //TODO we might need to break this into two seperate execution stages over several hours/days, one for loading USD and another for paying out.
   //Bank->USD
   private void placeUSDDespoit(double toPurchaseForCycle) throws InsufficientResourcesException {
-    if (toPurchaseForCycle <= 0) return;
+    if (toPurchaseForCycle <= 0) {
+      return;
+    }
 
     List<CoinbaseAccount> pmts = paymentService.getCoinbaseAccounts();
     CoinbaseAccount usdDepositer = null;
@@ -188,7 +201,7 @@ public class ExecuteApiController implements ExecuteApi {
 //      }
 //    }
     usdDepositer = paymentService.getCoinbaseAccounts().get(4);
-  // usdDepositer = paymentService.getPaymentTypes().get(3);
+    // usdDepositer = paymentService.getPaymentTypes().get(3);
     /*
     PaymentType{id='b22911ee-ef35-5c97-bdd4-aef3f65618d9', type='fiat_account', name='GBP Wallet', currency='GBP', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@4f99769a}
     PaymentType{id='e49c8d15-547b-464e-ac3d-4b9d20b360ec', type='fiat_account', name='USD Wallet', currency='USD', primary_buy=false, primary_sell=false, allow_buy=true, allow_sell=true, allow_deposit=true, allow_withdraw=true, limits=com.coinbase.exchange.api.payments.Limit@196c6487}
