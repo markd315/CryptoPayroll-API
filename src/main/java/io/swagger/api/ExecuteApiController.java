@@ -141,7 +141,7 @@ public class ExecuteApiController implements ExecuteApi {
       }
       //Wait 1/2 second before cancelling request.
       try {
-        amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+        amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpentIfChanged();
         if (amountOrderFilledFor < 0.0) {
           amountOrderFilledFor = 0.0;//Forbid negative
         }
@@ -156,7 +156,7 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Not concurrently safe to be used for multiple open orders.
-  private double cancelOrderForUsdReturnAmountAlreadySpent() throws UnexpectedException {
+  private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException {
     try {
       Thread.sleep(334);
     } catch (InterruptedException e) {
