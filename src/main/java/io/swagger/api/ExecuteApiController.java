@@ -159,6 +159,9 @@ public class ExecuteApiController implements ExecuteApi {
     if (openOrders.size() > 1) {
       throw new UnexpectedException("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
     }
+    if (openOrders.isEmpty()) {
+      return 999999999999999.99;//We have filled the order.
+    }
     com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
     double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
     orderService.cancelOrder(order.getId());
