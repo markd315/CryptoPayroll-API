@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,7 +92,9 @@ public class RecurringApiController implements RecurringApi {
     String accept = request.getHeader("Accept");
     body.filled(false);
     try {
-      service.updateRecurringOrder(body, UUID.fromString(target));
+      if (!code.equals("USD") && !body.getCurrency().toString().equals(code))
+        throw new NotFoundException(401, "Currency does not match");
+      service.updateRecurringOrder(body, UUID.fromString(target), code);
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
