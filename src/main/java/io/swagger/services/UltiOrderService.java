@@ -10,7 +10,6 @@ import java.nio.file.InvalidPathException;
 import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.InvalidPropertyException;
@@ -72,10 +71,10 @@ public class UltiOrderService {
   }
 
   public void deleteRecurringOrder(UUID id) throws NotFoundException {
-      if(recurringRepository.findById(id) == null) {
-        throw new NotFoundException(404, "No such order");
-      }
-      recurringRepository.delete(id);
+    if (recurringRepository.findById(id) == null) {
+      throw new NotFoundException(404, "No such order");
+    }
+    recurringRepository.delete(id);
   }
 
   public RecurringOrder getRecurringOrder(UUID id) throws NotFoundException {
@@ -112,13 +111,6 @@ public class UltiOrderService {
 
   public void wipeAllOneTimeOrders() throws NotFoundException {
     List<OneTimeOrder> orders = orderRepository.findAll();
-    if (orders == null || orders.size() == 0) {
-      try {
-        throw new NotFoundException(404, "No such order");
-      } catch (NotFoundException e) {
-        e.printStackTrace();
-      }
-    }
     orderRepository.delete(orders);
   }
 
