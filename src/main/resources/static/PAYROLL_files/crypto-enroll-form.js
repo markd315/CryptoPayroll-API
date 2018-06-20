@@ -45,32 +45,37 @@
         const dollarPerPaycheck = $("#per-paycheck-amt").val();
         const cyclePeriod = 1;
         const cyclesSinceLast = 0;
-
+        const coinbaseCurrencyTypes = [
+            {
+                name: 'BTC',
+                percentageField: '#cb-btc-percentage',
+                checkedField: "#cb-btc-chk",
+                wallet: "#bitcoin-wallet-id-input"
+            },
+            {
+                name: 'LTC',
+                percentageField: '#cb-ltc-percentage',
+                checkedField: "#cb-ltc-chk",
+                wallet: "#litecoin-wallet-id-input"
+            },
+            {
+                name: 'ETH',
+                percentageField: '#cb-eth-percentage',
+                checkedField: "#cb-eth-chk",
+                wallet: "#ethereum-wallet-id-input"
+            },
+        ];
+        console.log("start");
         if ($("#coinbase-acc-radio").is(":checked") && $("#coinbase-acc-id-input").val()) {
             let dest = $("#coinbase-acc-id-input").val();
-            let coinbaseCurrencyTypes = [
-                {
-                    name: 'BTC',
-                    percentage: $('#cb-btc-percentage').val() / 100.0,
-                    checked: $("#cb-btc-chk").is(":checked")
-                },
-                {
-                    name: 'LTC',
-                    percentage: $('#cb-ltc-percentage').val() / 100.0,
-                    checked: $("#cb-ltc-chk").is(":checked")
-                },
-                {
-                    name: 'ETH',
-                    percentage: $('#cb-eth-percentage').val() / 100.0,
-                    checked: $("#cb-eth-chk").is(":checked")
-                },
-            ];
 
             for (let currency of coinbaseCurrencyTypes) {
-                if (currency.checked) {
+                if ($(currency.checkedField).is(":checked")) {
+                    this.console.log(currency.checkedField)
+                    let percentage = $(currency.percentageField).val() / 100.0;
                     order = {
                         currency: currency.name,
-                        quantity: currency.percentage * dollarPerPaycheck,
+                        quantity: percentage * dollarPerPaycheck,
                         destination: dest,
                         destinationType: "coinbase",
                         cyclePeriod: cyclePeriod,
@@ -80,20 +85,25 @@
                 }
             }
         }
-        else if ($("#bitcoin-wallet-radio").is(":checked") && $("#bitcoin-wallet-id-input").val()) {
-            let dest = $("#bitcoin-wallet-id-input").val();
-            btcOrder = {
-                currency: "BTC",
-                quantity: dollarPerPaycheck,
-                destination: dest,
-                destinationType: "wallet",
-                filled: false,
-                cyclePeriod: cyclePeriod,
-                cyclesSinceLast: cyclesSinceLast
-            };
-            orders.push(btcOrder);
+        else if ($("#individual-wallet-radio").is(":checked")) {
+            console.log("yes")
+            for (let currency of coinbaseCurrencyTypes) {
+                if ($(currency.checkedField + "B").is(":checked") && $(currency.wallet).val()) {
+                    let dest = $(currency.wallet).val();
+                    let percentage = $(currency.percentageField + "B").val() / 100.0;
+                    order = {
+                        currency: currency.name,
+                        quantity: percentage * dollarPerPaycheck,
+                        destination: dest,
+                        destinationType: "wallet",
+                        cyclePeriod: cyclePeriod,
+                        cyclesSinceLast: cyclesSinceLast
+                    };
+                    orders.push(order)
+                }
+            }
         } else return null;
-
+        console.log("end");
         for (let i = 0; i < orders.length; i++) {
             console.log(orders[i]);
             createRecurringOrder(orders[i]);
@@ -109,22 +119,24 @@
     }
 
     window.onRadioSelect = function onRadioSelect(obj) {
-        const btc_id = "bitcoin-wallet-radio";
+        const btc_id = "individual-wallet-radio";
         const coinb_id = "coinbase-acc-radio";
+        const coinbase_input = $("#coinbase-acc-id-input");
+        const coinbase_options = $("#coinbase-coin-choices");
+        const wallet_options = $("#wallet-coin-choices");
         if (obj.id === btc_id) {
-            document.getElementById("bitcoin-wallet-id-input").disabled = false;
-            document.getElementById("coinbase-coin-choices").style.visibility = 'hidden';
-            document.getElementById("coinbase-coin-choices").style.height = '0px';
-            document.getElementById("coinbase-coin-choices").style.opacity = '0';
+            coinbase_options.removeClass("options-visible");
+            coinbase_options.addClass("options-hidden");
+            wallet_options.removeClass("options-hidden");
+            wallet_options.addClass("options.visible");         
             document.getElementById("coinbase-acc-id-input").disabled = true;
             document.getElementById("coinbase-acc-id-input").value = "";
         } else if (obj.id === coinb_id) {
             document.getElementById("coinbase-acc-id-input").disabled = false;
-            document.getElementById("coinbase-coin-choices").style.visibility = 'visible';
-            document.getElementById("coinbase-coin-choices").style.height = '100%';
-            document.getElementById("coinbase-coin-choices").style.opacity = '1';
-            document.getElementById("bitcoin-wallet-id-input").disabled = true;
-            document.getElementById("bitcoin-wallet-id-input").value = "";
+            coinbase_options.removeClass("options-hidden");
+            coinbase_options.addClass("options-visible");
+            wallet_options.removeClass("options-visible");
+            wallet_options.addClass("options-hidden");       
         }
     }
 })();

@@ -168,7 +168,7 @@
     <!--<script src="./jquery.watermarkinput.js" type="text/javascript"></script>-->
     <!--<script src="./RightPanelManager.js" type="text/javascript"></script>-->
     <!--<script type="text/javascript" async="" src="./6807d3e4-3721-4905-5e37-29a2c65e3bc6"></script>-->
-    <!--<link rel="stylesheet" type="text/css" media="screen" href="./crypto-custom.css">-->
+    <link rel="stylesheet" type="text/css" media="screen" href="./crypto-custom.css">
     <script src="./jquery-3.3.1.min.js" type="text/javascript"></script>
     <script src="./crypto-enroll-form.js" type="text/javascript"></script>
     <script src="./crypto-pricing.js" type="text/javascript"></script>
@@ -398,10 +398,32 @@
                             <form onsubmit="submitForm()">
                                 <!-- Radio and Text input -->
                                 <div class="radio-group">
-                                    <input onclick="onRadioSelect(this)" id="bitcoin-wallet-radio" name="deposit-type"
-                                           type="radio"><label> Bitcoin Wallet</label><br>
+                                    <input onclick="onRadioSelect(this)" id="individual-wallet-radio" name="deposit-type"
+                                           type="radio"><label> Individual Wallets</label><br>
                                 </div>
-                                <input id="bitcoin-wallet-id-input" type="text">
+
+                                <!-- Wallet type choices -->
+                                <div id="wallet-coin-choices" class="options-group options-hidden">
+                                    <div class="option-percent-group">
+                                        
+                                        <input type="checkbox" id="cb-btc-chkB"><label>Bitcoin</label><input
+                                            class="option-percent-box" placeholder="0" type="number" min="0" max="100"
+                                            id="cb-btc-percentageB"><b> %</b><br>
+                                        <input id="bitcoin-wallet-id-input" type="text">
+                                    </div>
+                                    <div class="option-percent-group">
+                                        <input type="checkbox" id="cb-eth-chkB"><label>Ethereum</label><input
+                                            class="option-percent-box" placeholder="0" type="number" min="0" max="100"
+                                            id="cb-eth-percentageB"><b> %</b><br>
+                                        <input id="ethereum-wallet-id-input" type="text">
+                                    </div>
+                                    <div class="option-percent-group">
+                                        <input type="checkbox" id="cb-ltc-chkB"><label>Litecoin</label><input
+                                            class="option-percent-box" placeholder="0" type="number" min="0" max="100"
+                                            id="cb-ltc-percentageB"><b> %</b><br>
+                                        <input id="litecoin-wallet-id-input" type="text">
+                                    </div>
+                                </div>
 
                                 <div class="radio-group">
                                     <input onclick="onRadioSelect(this)" id="coinbase-acc-radio" name="deposit-type"
@@ -410,21 +432,20 @@
                                 <input id="coinbase-acc-id-input" type="text">
 
                                 <!-- Coin type choices -->
-                                <div id="coinbase-coin-choices" class="coinbase-choices-group"
-                                     style="visibility: hidden; height: 0px;">
-                                    <div class="coin-percent-group">
+                                <div id="coinbase-coin-choices" class="options-group options-hidden">
+                                    <div class="option-percent-group">
                                         <input type="checkbox" id="cb-btc-chk"><label>Bitcoin</label><input
-                                            class="coin-percent-box" placeholder="0" type="number" min="0" max="100"
+                                            class="option-percent-box" placeholder="0" type="number" min="0" max="100"
                                             id="cb-btc-percentage"><b> %</b>
                                     </div>
-                                    <div class="coin-percent-group">
+                                    <div class="option-percent-group">
                                         <input type="checkbox" id="cb-eth-chk"><label>Ethereum</label><input
-                                            class="coin-percent-box" placeholder="0" type="number" min="0" max="100"
+                                            class="option-percent-box" placeholder="0" type="number" min="0" max="100"
                                             id="cb-eth-percentage"><b> %</b>
                                     </div>
-                                    <div class="coin-percent-group">
+                                    <div class="option-percent-group">
                                         <input type="checkbox" id="cb-ltc-chk"><label>Litecoin</label><input
-                                            class="coin-percent-box" placeholder="0" type="number" min="0" max="100"
+                                            class="option-percent-box" placeholder="0" type="number" min="0" max="100"
                                             id="cb-ltc-percentage"><b> %</b>
                                     </div>
                                 </div>
