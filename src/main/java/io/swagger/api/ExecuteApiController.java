@@ -27,6 +27,7 @@ import javax.naming.InsufficientResourcesException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,8 +64,6 @@ public class ExecuteApiController implements ExecuteApi {
   @Autowired
   private WithdrawalsService withdrawalsService;
 
-  private List<NewOrderSingle> ourOpenOrders = new ArrayList<NewOrderSingle>();
-
   @Autowired
   public ExecuteApiController(ObjectMapper objectMapper, HttpServletRequest request, UltiOrderService service) {
     this.objectMapper = objectMapper;
@@ -97,7 +96,8 @@ public class ExecuteApiController implements ExecuteApi {
 
     double usdWeOwn = queryAccountBalance();
 
-    double toPurchaseForCycle = (1.1 * amountWeOwePayees - usdWeOwn);
+
+    double toPurchaseForCycle = (1.03 * amountWeOwePayees - usdWeOwn + 10.0);//Should be enough to order in order to ensure transfer can process
     try {
       placeUSDDespoit(toPurchaseForCycle);
     } catch (InsufficientResourcesException e1) {
@@ -129,27 +129,46 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   private void orderCurrencyProtocol(double toPurchaseForCycle, String currencyCode) {
-    placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
+    if (toPurchaseForCycle < .01) {
+      return;
+    }
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 10) { //TODO reconsider this constant 10. But with 0, if we get very-nearly-complete
+
+      placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
       //TODO fills we might have a tiny amount remaining to buy and our small buys will be REJECTED by GDAX. This is a workaround.
+      //TODO Don't cancel and replace unless price has changed
+
       try {
-        Thread.sleep(334);//Strictest rate limit is 3 per second
+        Thread.sleep(500);//Strictest rate limit is 3 per second
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+
+      //Wait 1/2 second before cancelling request.
       try {
-        amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+        amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpentIfChanged();
+        if (amountOrderFilledFor < 0.0) {
+          amountOrderFilledFor = 0.0;//Forbid negative
+        }
       } catch (UnexpectedException e) {
         e.printStackTrace();
+      } catch (InvalidPropertyException k) {
+        System.err.println("Already finished purchasing for this cycle.");
+        amountOrderFilledFor = 0;
+        toPurchaseForCycle = 0;
+
       }
       toPurchaseForCycle -= amountOrderFilledFor;
-      placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
+      if (toPurchaseForCycle < 0.0) {
+        toPurchaseForCycle = 0.0; //Forbid negative
+      }
     }
   }
 
   //Not concurrently safe to be used for multiple open orders.
-  private double cancelOrderForUsdReturnAmountAlreadySpent() throws UnexpectedException {
+
+  private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException {
     try {
       Thread.sleep(334);
     } catch (InterruptedException e) {
@@ -158,6 +177,10 @@ public class ExecuteApiController implements ExecuteApi {
     List<com.coinbase.exchange.api.orders.Order> openOrders = orderService.getOpenOrders();
     if (openOrders.size() > 1) {
       throw new UnexpectedException("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
+    }
+
+    if (openOrders.isEmpty()) {
+      throw new IllegalStateException("We have already filled the order.");//We have filled the order.
     }
     com.coinbase.exchange.api.orders.Order order = openOrders.get(0);
     double filledAmount = Double.valueOf(order.getFilled_size()) * Double.valueOf(order.getPrice());
@@ -222,12 +245,19 @@ public class ExecuteApiController implements ExecuteApi {
     //TODO
     double cryptoQuote = gdaxAskForPrice(currencyEnum);
     BigDecimal price = new BigDecimal(cryptoQuote);
-    price.setScale(2, BigDecimal.ROUND_FLOOR); //We want to undercut the market price by one cent.
+    price.add(new BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_DOWN); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
-    BigDecimal sizeBTC = toPayUSD.divide(price);
-    NewLimitOrderSingle ourOrder = new NewLimitOrderSingle(sizeBTC, price, Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
-    orderService.createOrder(ourOrder);
-    ourOpenOrders.add(ourOrder); //TODO do we really need this?
+
+    BigDecimal sizeBTC = toPayUSD.divide(price, 8, BigDecimal.ROUND_UP);//GDAX can handle 8 decimal points
+    NewLimitOrderSingle
+        ourOrder =
+        new NewLimitOrderSingle(sizeBTC, price.setScale(2, BigDecimal.ROUND_DOWN), Boolean.TRUE, currencyEnum.toString() + "-USD");//Post_only
+    ourOrder.setSide("buy");
+    ourOrder.setProduct_id(currencyEnum.toString() + "-USD");
+    //TODO recover gracefully in case we aren't fast enough to get the current price, and it goes down.
+    com.coinbase.exchange.api.orders.Order forDebug = orderService.createOrder(ourOrder);
+    System.out.println(forDebug);
+
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
@@ -254,7 +284,7 @@ public class ExecuteApiController implements ExecuteApi {
     }
   }
 
-  private double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
+  public double gdaxAskForPrice(OneTimeOrder.CurrencyEnum currency) {
     //Use MarketDataService highest BID.
     MarketData data = marketDataService.getMarketDataOrderBook(currency.toString() + "-USD", "1");
     List<OrderItem> bids = data.getBids();
@@ -267,4 +297,3 @@ public class ExecuteApiController implements ExecuteApi {
     return highestBid.getPrice().doubleValue();
   }
 }
-

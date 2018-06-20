@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,12 +50,11 @@ public class RecurringApiController implements RecurringApi {
       if (body == null) {
         throw new NullPointerException("Request body cannot be null");
       }
+      //check if exist if yes delete, then save
 
       // Check valid currency
       if (body.getCurrency() == Order.CurrencyEnum.USD)
         return ResponseEntity.badRequest().build();
-
-      //cyclePeriod should be set by the user and adding recurring order should not affact the period
 
       service.addRecurringOrder(body);
       toReturn = service.findRecurringOrderById(body.getId()); // retrieve stored entry to respond with real UUID
@@ -101,7 +101,16 @@ public class RecurringApiController implements RecurringApi {
                                               @ApiParam(value = "The recurring order to replace", required = true) @PathVariable("target") String target,
                                               @ApiParam(value = "The currency to override (USD: all)", allowableValues = "USD, BTC, ETH, LTC") @RequestHeader(value = "code", required = false) String code) {
     String accept = request.getHeader("Accept");
-    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+    body.filled(false);
+    try {
+      if (!code.equals("USD") && !body.getCurrency().toString().equals(code))
+        throw new NotFoundException(401, "Currency does not match");
+      service.updateRecurringOrder(body, UUID.fromString(target), code);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
 }
