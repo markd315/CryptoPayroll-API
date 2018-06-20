@@ -31,31 +31,50 @@ input[type="text"], input[type="number"]{
     padding: 5px;
 }
 
-input[type=checkbox]+label {
-    padding-left: 4px;
-    width: 80px;
-    min-width: 80px;
-    display: table-cell;
-}
-
 .form-container > label {
     width:30%;
 }
 
-.coinbase-choices-group {
-    transition: all .2s linear;
+.options-group {
+    transition: all .2s linear; 
 }
 
-.coin-percent-box {
+.option-percent-box {
     margin-left: 4px;
     display: table-cell;
 }
 
-.coin-percent-group {
+.option-percent-group {
     margin-left: 30px;
     display: table;
     table-layout: fixed;
     border-spacing: 2px;
+    border: grey 2px;
+}
+
+.options-percent-group > input[type=checkbox] {
+    display: table-cell;
+}
+
+.options-percent-group > input[type=text], input[type=checkbox]+label {
+    padding-left: 4px;
+    padding-bottom: 2px;
+    width: 80px;
+    min-width: 80px;
+    display: inline-block;
+}
+
+
+.options-visible {
+    visibility: visible;
+    height: 100%;
+    opacity: 1
+}
+
+.options-hidden {
+    visibility: hidden;
+    height: 0px;
+    opacity: 0
 }
 
 .per-paycheck-input {
@@ -72,3 +91,5 @@ input[type=checkbox]+label {
 .coin-estimate-group {
     margin-top: 12px;
 }
+
+

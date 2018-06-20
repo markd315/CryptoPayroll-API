@@ -4,6 +4,7 @@ import com.coinbase.exchange.api.accounts.Account;
 import com.coinbase.exchange.api.accounts.AccountService;
 import com.coinbase.exchange.api.deposits.DepositService;
 import com.coinbase.exchange.api.entity.NewLimitOrderSingle;
+import com.coinbase.exchange.api.entity.NewOrderSingle;
 import com.coinbase.exchange.api.entity.PaymentResponse;
 import com.coinbase.exchange.api.marketdata.MarketData;
 import com.coinbase.exchange.api.marketdata.MarketDataService;
@@ -95,6 +96,7 @@ public class ExecuteApiController implements ExecuteApi {
 
     double usdWeOwn = queryAccountBalance();
 
+
     double toPurchaseForCycle = (1.03 * amountWeOwePayees - usdWeOwn + 10.0);//Should be enough to order in order to ensure transfer can process
     try {
       placeUSDDespoit(toPurchaseForCycle);
@@ -132,14 +134,17 @@ public class ExecuteApiController implements ExecuteApi {
     }
     double amountOrderFilledFor = Double.MAX_VALUE;
     while (toPurchaseForCycle > 10) { //TODO reconsider this constant 10. But with 0, if we get very-nearly-complete
+
       placeOrderForUsdAmount(toPurchaseForCycle, Order.CurrencyEnum.fromValue(currencyCode));
       //TODO fills we might have a tiny amount remaining to buy and our small buys will be REJECTED by GDAX. This is a workaround.
       //TODO Don't cancel and replace unless price has changed
+
       try {
         Thread.sleep(500);//Strictest rate limit is 3 per second
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+
       //Wait 1/2 second before cancelling request.
       try {
         amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpentIfChanged();
@@ -152,6 +157,7 @@ public class ExecuteApiController implements ExecuteApi {
         System.err.println("Already finished purchasing for this cycle.");
         amountOrderFilledFor = 0;
         toPurchaseForCycle = 0;
+
       }
       toPurchaseForCycle -= amountOrderFilledFor;
       if (toPurchaseForCycle < 0.0) {
@@ -161,6 +167,7 @@ public class ExecuteApiController implements ExecuteApi {
   }
 
   //Not concurrently safe to be used for multiple open orders.
+
   private double cancelOrderForUsdReturnAmountAlreadySpentIfChanged() throws UnexpectedException {
     try {
       Thread.sleep(334);
@@ -171,6 +178,7 @@ public class ExecuteApiController implements ExecuteApi {
     if (openOrders.size() > 1) {
       throw new UnexpectedException("Cryptoroll API currently only supports one open order, please order your coins one at a time.");
     }
+
     if (openOrders.isEmpty()) {
       throw new IllegalStateException("We have already filled the order.");//We have filled the order.
     }
@@ -239,6 +247,7 @@ public class ExecuteApiController implements ExecuteApi {
     BigDecimal price = new BigDecimal(cryptoQuote);
     price.add(new BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_DOWN); //We want to undercut the market price by one cent.
     BigDecimal toPayUSD = new BigDecimal(toPurchaseForCycle);
+
     BigDecimal sizeBTC = toPayUSD.divide(price, 8, BigDecimal.ROUND_UP);//GDAX can handle 8 decimal points
     NewLimitOrderSingle
         ourOrder =
@@ -248,6 +257,7 @@ public class ExecuteApiController implements ExecuteApi {
     //TODO recover gracefully in case we aren't fast enough to get the current price, and it goes down.
     com.coinbase.exchange.api.orders.Order forDebug = orderService.createOrder(ourOrder);
     System.out.println(forDebug);
+
     //Use NewLimitOrderSingle
     //Make sure that we only make one request per call of this method, or that we use Thread.sleep(334) between calls.
     //Make sure we place this order as a LIMIT BUY order SLIGHTLY under the market price, no fill-or-kill, no expiry.
