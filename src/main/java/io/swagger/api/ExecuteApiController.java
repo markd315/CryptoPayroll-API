@@ -141,10 +141,16 @@ public class ExecuteApiController implements ExecuteApi {
       //Wait 1/2 second before cancelling request.
       try {
         amountOrderFilledFor = cancelOrderForUsdReturnAmountAlreadySpent();
+        if (amountOrderFilledFor < 0.0) {
+          amountOrderFilledFor = 0.0;//Forbid negative
+        }
       } catch (UnexpectedException e) {
         e.printStackTrace();
       }
       toPurchaseForCycle -= amountOrderFilledFor;
+      if (toPurchaseForCycle < 0.0) {
+        toPurchaseForCycle = 0.0; //Forbid negative
+      }
     }
   }
 
