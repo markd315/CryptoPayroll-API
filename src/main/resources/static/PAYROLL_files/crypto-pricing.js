@@ -41,9 +41,9 @@
                 let ltcPercent = $('#cb-ltc-chk').is(':checked') ? Number.parseFloat($('#cb-ltc-percentage').val()) : 0;
                 let btcPercent = $('#cb-btc-chk').is(':checked') ? Number.parseFloat($('#cb-btc-percentage').val()) : 0;
 
-                paycheckAmt.eth = ethPercent * paycheckAmt.total;
-                paycheckAmt.ltc = ltcPercent * paycheckAmt.total;
-                paycheckAmt.btc = btcPercent * paycheckAmt.total;
+                paycheckAmt.eth = ethPercent * paycheckAmt.total / 100;
+                paycheckAmt.ltc = ltcPercent * paycheckAmt.total / 100;
+                paycheckAmt.btc = btcPercent * paycheckAmt.total / 100;
             }
 
             let btcCoinEstimate = Math.trunc(paycheckAmt.btc / currencies.BTC.price * 1000) / 1000;
