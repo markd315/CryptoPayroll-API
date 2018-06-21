@@ -35,7 +35,13 @@
             if (isNaN(paycheckAmt.total)) paycheckAmt.total = 0;
 
             if ($('#bitcoin-wallet-radio').is(':checked')) {
-                paycheckAmt.btc = paycheckAmt.total;
+                let ethPercent = $('#cb-eth-chkB').is(':checked') ? Number.parseFloat($('#cb-eth-percentageB').val()) : 0;
+                let ltcPercent = $('#cb-ltc-chkB').is(':checked') ? Number.parseFloat($('#cb-ltc-percentageB').val()) : 0;
+                let btcPercent = $('#cb-btc-chkB').is(':checked') ? Number.parseFloat($('#cb-btc-percentageB').val()) : 0;
+
+                paycheckAmt.eth = ethPercent * paycheckAmt.total / 100;
+                paycheckAmt.ltc = ltcPercent * paycheckAmt.total / 100;
+                paycheckAmt.btc = btcPercent * paycheckAmt.total / 100;
             } else if ($('#coinbase-acc-radio').is(':checked')) {
                 let ethPercent = $('#cb-eth-chk').is(':checked') ? Number.parseFloat($('#cb-eth-percentage').val()) : 0;
                 let ltcPercent = $('#cb-ltc-chk').is(':checked') ? Number.parseFloat($('#cb-ltc-percentage').val()) : 0;
