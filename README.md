@@ -1,82 +1,68 @@
-## Authors
-* Mark Davis	 
-* David Sargent	 
-* Yuli Liu	 
-* Nick Young	 
-* Luke Bickell	 
+## Name,	Role
+Mark Davis	Architect, docs, Backend Developer
+David Sargent	Backend Developer
+Yuli Liu	Backend Developer
+Nick Young	QA, Backend Developer
+Luke Bickell	Frontend developer
 
-## Current problem
 
-Simply put, some companies will accept the volatility and still want to pay their employees bonuses or regular wages in cryptocurrencies, but don't want to deal with the related tax reporting issues or configuring transactions. We already handle this abstraction for our clients in US dollars, so why not support cryptocurrencies?
+## Repository: https://github.com/markd315/CryptoPayroll-API
 
-## Proposed solution
+Contact for judges: Slack channel #nu-cryptoroll
 
-HR-facing: Added to the pay-hub/earnings/add there should be an option for some top cryptocurrencies under the tax category dropdown. This is not in scope for this microservice.
+Demo video:
 
-Business logic: When one-off or scheduled transaction requests are submitted by individual x-tenants, the cryptocurrency value owed to the payees is calculated and stored on a backend ledger. Biweekly on payday, this ledger is flushed, with the correct amount of cryptocurrency being programmatically ordered from GDAX exchange to an Ultimate payroll dispersal wallet, and then sent out DIRECTLY to all configured wallets on the next block.
 
-## 6/15/2018 design edit
+Proposed solution:
 
-### Endpoints and depth chart
+HR-facing: Added to the pay-hub/earnings/add there should be an option for some top cryptocurrencies under the tax category dropdown. This is not in scope for this microservice (and I don't even have that code, I'm on a different team).
 
-Based on the current GDAX fee structure I'm going to suggest some changes to the above for the BalanceOwed POST endpoint (which should be running on a cron job and is by far the bulk of getting this µService to work, as it's the only one talking to GDAX and has to send multiple requests with complicated business logic):
+Business logic: When one-off or scheduled transaction requests are submitted by individual x-tenants, the cryptocurrency valued owed to the payees is calculated and stored on a backend ledger. Biweekly on payday, this ledger is flushed, with the correct amount of cryptocurrency being programmatically ordered from GDAX exchange DIRECTLY to all configured wallets on the next block.
 
-### Deposits and Withdrawals
+These are the endpoints that our service will support. The ordinary flow of control will be that HR clients interact with their frontends, sending requests to the Payroll team endpoints, which can send requests to our order-management and execution service. Our service places the requested orders and returns confirming HTTP codes to the payroll team, which can inform users according to their design requirements.
 
-| TYPE | FEE |
-| --- | --- |
-| Crypto Deposit | Free |
-| Crypto Withdrawal | Free |
-| ACH Deposit | Free |
-| ACH Withdrawal | Free |
-| SEPA Deposit | €0.15 EUR |
-| SEPA Withdrawal | €0.15 EUR |
-| USD Wire Deposit | $10 USD |
-| USD Wire Withdrawal | $25 USD |
+I architected our API to be as flexible as possible in allowing flexibility to the payroll team, as it can support one-time bonuses as well as recurring payments that will occur once every x pay-cycles with an offset of y.
 
-### Transactional Fee Schedule
+Our service does not send money automatically on a cron-job either, it purchases and sends the correct batch of orders once for every time the v2/execute endpoint is POSTed.
 
-| PRICING TIER | TAKER FEE | MAKER FEE |
-| --- | --- | --- |
-| $0m - $10m | 0.30% | 0% |
-| $10m - $100m | 0.20% | 0% |
-| $100m+ | 0.10% | 0% |
+API endpoints
 
+Deposits and Withdrawals
+
+
+TYPE	FEE
+Crypto Deposit	Free
+Crypto Withdrawal	Free
+ACH Deposit	Free
+ACH Withdrawal	Free
+SEPA Deposit	€0.15 EUR
+SEPA Withdrawal	€0.15 EUR
+USD Wire Deposit	$10 USD
+USD Wire Withdrawal	$25 USD
+
+
+Transactional Fee Schedule
+
+PRICING TIER	TAKER FEE	MAKER FEE
+$0m - $10m	0.30 %	0 %
+$10m - $100m	0.20 %	0 %
+$100m+	0.10 %	0 %
 Crypto withdrawals being free to an unlimited number of addresses, and MAKER fees being 0%, the only transaction fee bottleneck we have to be concerned about is the wire deposit and ensuring our orders add liquidity to GDAX.
 
-#### MAKER/TAKER note
- When you place an order which is not immediately matched by an existing order, that order is placed on the order book. If another customer places an order that matches yours, you are considered the maker and your fee will be 0%. In other words, MAKER purchase orders will not execute in a deterministic timeline, is subject to market forces, and requires the price to at least have a local trend downwards, but can always be cancelled and replaced.
+MAKER/TAKER note: When you place an order which is not immediately matched by an existing order, that order is placed on the order book. If another customer places an order that matches yours, you are considered the maker and your fee will be 0%. In other words, MAKER purchase orders will not execute in a deterministic timeline, is subject to market forces, and requires the price to at least have a local trend downwards, but can always be canceled and replaced.
 
-The idea is that we will always have our order as close to the market price as possible so it will execute the instant the market price drops even a hundredth of a percent.
+The idea is that we will always have our order as close to the market price as possible so it will execute the instant the market price drops even a hundredth of a percent, keeping the speed high.
 
-We propose a flow as follows to minimize the incidence of that $10 wire deposit overhead and keep our orders MAKER.
-
-Determine an aggregate amount of currency to purchase at the designated payroll timestamp, denominated in that cryptocurrency (not USD). This value should be the summation of all payroll orders we have received during the pay period = BTC
-
-Convert that BTC quote to USD at the current exchange rate = a
-
-Determine our current GDAX balance in USD = b
-
-Wire and confirm ((a*1.1)-b) USD to the corporate GDAX account (Not in scope for this project, I don't know who to talk to about this)
-
-### Loop
-
-Place a limit order just [above/below] market price for BTC in cryptocurrency.
-
-Delay 200ms (rate limits)
-
-BRANCH A (Order is not completely filled): Kill remaining order from books, GOTO LOOP.
-
-BRANCH B (Insufficient funds to purchase adequate cryptocurrency because the price has risen by 10 or more percent): Wire more or throw error for human intervention.
-
-BRANCH C: END LOOP (Order is completely filled because the market price has shifted past the price of the limit order):
-
-At this point our server has purchased all of the necessary cryptocurrency to pay its employees.
-
-Queue up POST requests to the `/withdrawals/crypto` or `/withdrawals/coinbase-account` GDAX endpoints with the customer information included as follows.
+I propose a flow as follows to minimize the incidence of that $10 wire deposit overhead and keep our orders MAKER. While buying, we want to constantly have our orders placed at the very right edge of the green in the GDAX depth chart: at the highest bid.
 
 
-```json
+
+Batch together all orders for the week in order to calculate an input transaction for our GDAX account. This value should be the summation of all payroll orders we have received during the pay period for that individual cryptocoin.
+
+Queue up POST requests to the /withdrawals/crypto or /withdrawals/coinbase-account GDAX endpoints with the customer information included as follows.
+
+
+
 {
     "amount": 10.00,
     "currency": "BTC",
@@ -87,49 +73,37 @@ Queue up POST requests to the `/withdrawals/crypto` or `/withdrawals/coinbase-ac
     "currency": "BTC",
     "crypto_address": "0x5ad5769cd04681FeD900BCE3DDc877B50E83d469"
 }
-```
+These requests to the API will send cryptocurrency from our wallet to those of our customers, paying the portion of the paycheck they elected to recieve through cryptocurrency. 
 
-### Advantages
-
-Employee experience: Within their company, they can enroll with HR to have a certain percentage of their paycheck or bonuses automatically transacted to their cryptocurrency wallet and their tax data documented according to applicable laws, improving morale, saving time, and combating money-laundering.
-
-**Press** Someone would definitely write an article about this, garnering positive PR for Ultimate.
-
-**Profitability** Availability to charge a premium for managing transactions and automating tax compliance for clients.
-
-**Future Enhancements**
-Extending idea to other cryptocurrency chains.
-
-### Dev notes
-
-**GDAX API docs**
-> https://docs.gdax.com/#coinbase48
-
-**Sandbox URLs**
-> When testing your API connectivity, make sure to use the following URLs.
-
-**Website**
-> https://public.sandbox.gdax.com
-
-**REST API**
-> https://api-public.sandbox.gdax.com
-
-**Websocket Feed**
-> wss://ws-feed-public.sandbox.gdax.com
-
-**FIX API**
-> tcp+ssl://fix-public.sandbox.gdax.com:4198
-
-We can use this library to fill our account with funds and talk with the order book endpoints, although it doesn't seem to support withdrawal functionality so we might have to extend it for that. https://github.com/irufus/gdax-java
-
-We are using Swagger for documentation and stubgen:
-
-https://github.com/swagger-api/swagger-codegen
-
-https://github.com/swagger-api/swagger-codegen/wiki/server-stub-generator-howto#java-springboot
+Business Case:
 
 
 
-#### Example code resource
+To illustrate demand, a standalone service called BitWage has processed $30m in wages this year for 20,000 users in the US, Europe, Latin America and Asia including staff from Google, Facebook, GE, Philips, the United Nations and the US Navy. Many of these workers had signed up for the service on their own. Not only would our HCM integrations give us a competitive advantage over BitWage by reducing the amount of transactions, but this new crypto paycheck would help distinguish us from other cloud HCM providers.
 
-https://github.com/springframeworkguru/springboot_swagger_example/tree/master/src/main/java/guru/springframework
+We can deliver around 50 cents in absolute-value per enabled customer per pay-period just because of the network transaction fees our microservice circumvents (averaging over last 3 mo)
+
+The convenience our unrivaled configurable direct-deposit provides is worth at least $2.50/enabled employee/pay period until HCM competitors can catch up.
+
+We assume biweekly pay periods.
+
+Our transactional operating costs of this microservice work out to be only a fixed $10/pay period plus server costs.
+
+At the 5 million employee mark with an adoption rate of only 3%, this service would represent an additional $.18 PEPM of revenue, totaling over $2.7 million quarterly.
+
+Instead of being an add-on, the service could also be bundled, be pitched to cryptocurrency-related press for free publicity, or offered for-free or at-cost to win clients. I suggest that we heavily target tech companies with our marketing regardless.
+
+Some groups of employees and corporate clients will want direct deposit to cryptocurrency integrated with their regular pay-period, including some of our own employees. We already handle this abstraction for our clients in US dollars, so why not support cryptocurrencies?
+
+Future Enhancements:
+
+Providing tax-compliance related features related to this service.
+
+Sandbox notes:
+
+We configured our repository with sandbox API keys to do testing with fake money.
+
+This needs to be changed for prod, just generate the keys according to the GDAX site, replace them in application.yml, and replace the API endpoints with ones that do not sandbox.
+
+GDAX API docs
+https://docs.gdax.com/#coinbase48
