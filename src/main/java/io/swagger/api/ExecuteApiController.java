@@ -274,7 +274,7 @@ public class ExecuteApiController implements ExecuteApi {
 
   private void payAmountToWallet(double toPay, String address, OneTimeOrder.CurrencyEnum currency, OneTimeOrder.DestinationTypeEnum destinationType) {
     if (destinationType == Order.DestinationTypeEnum.WALLET) {
-      withdrawalsService.makeWithdrawalToCryptoAccount(new BigDecimal(toPay), currency.toString(), address);
+      withdrawalsService.makeWithdrawalToCryptoAccount(new BigDecimal(toPay).setScale(2, BigDecimal.ROUND_DOWN), currency.toString(), address);
     } else if (destinationType == Order.DestinationTypeEnum.COINBASE) {
       withdrawalsService.makeWithdrawalToCoinbase(new BigDecimal(toPay), currency.toString(), address);
     }
