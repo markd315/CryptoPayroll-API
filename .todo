@@ -1,0 +1,19 @@
+Notes from the prototypers:
+
+Stall until sufficient USD instead of breaking with an error code, or seperate the load USD functionality from the /execute buy and send crypto endpoint.
+
+Optimize delay on how quickly we cancel a purchase order.
+
+Protect endpoints with OAuth/some other security. We want our own services calling them AFTER debiting the appropriate amounts from client accounts, not some other arbitrary person getting free crypto orders on our dime.
+
+Investigate any issues caused by already having some BTC/ETH... in account while trying to purchase.
+
+Make sure we're getting the right error on the output part of the payroll transaction, I believe we want the one that says it sent to coinbase temporarily (I think it's a guard GDAX has in their sandbox code to prevent real-currency withdrawals)
+
+Change the GDAX sandbox URL to production.
+
+Generate API keys on the GDAX mainnet for production.
+
+Make sure the file with API keys is penetration-proof.
+
+Verify that we can deposit from a valid wire or ACH payment mechanism on the mainnet. (whichever is needed)
