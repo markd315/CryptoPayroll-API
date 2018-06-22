@@ -1,2 +1,4 @@
 * linguist-vendored
 *.js linguist-vendored=false
+*.java linguist-vendored=false
+*.yaml linguist-vendored=false
